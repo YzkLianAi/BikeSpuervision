@@ -1,4 +1,4 @@
-package com.computer.bikeSupervision.pojo.Dto;
+package com.computer.bikeSupervision.pojo.dto;
 
 import lombok.Data;
 

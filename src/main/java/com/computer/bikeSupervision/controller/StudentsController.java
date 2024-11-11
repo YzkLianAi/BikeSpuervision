@@ -5,11 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.CustomException;
 import com.computer.bikeSupervision.common.Result;
-import com.computer.bikeSupervision.pojo.Dto.StudentLoginDto;
+import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
 import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.service.StudentsService;
 import com.computer.bikeSupervision.utils.JwtUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
@@ -27,6 +28,7 @@ public class StudentsController {
     @Autowired
     StudentsService studentsService;
 
+    @ApiOperation(value = "学生登录接口", notes = "需要转递学号studentNumber和密码password")
     @PostMapping("/login")
     public Result<String> login(@RequestBody StudentLoginDto studentLoginDto) {
         //获取当前学生的学号
@@ -59,6 +61,7 @@ public class StudentsController {
     }
 
 
+    @ApiOperation(value = "获取当前登录的学生信息")
     @GetMapping("/getStudentById")
     public Result<Students> getStudentById() {
         LambdaQueryWrapper<Students> queryWrapper = new LambdaQueryWrapper<>();

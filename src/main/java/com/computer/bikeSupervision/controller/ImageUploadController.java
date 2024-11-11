@@ -4,6 +4,7 @@ package com.computer.bikeSupervision.controller;
 import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.utils.QiniuCloudUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,7 +23,7 @@ public class ImageUploadController {
     @Autowired
     private QiniuCloudUtils qiniuCloudUtils;
 
-
+    @ApiOperation(value = "上传图片至七牛云云端接口", notes = "需要传递一个MultipartFile 类型的文件")
     @PostMapping("/uploadImage")
     public Result<String> uploadImage(MultipartFile image) {
         try {
