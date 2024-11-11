@@ -8,7 +8,6 @@ import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.pojo.Dto.StudentLoginDto;
 import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.service.StudentsService;
-import com.computer.bikeSupervision.service.impl.StudentsServiceImpl;
 import com.computer.bikeSupervision.utils.JwtUtils;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +33,8 @@ public class StudentsController {
         String studentId = studentLoginDto.getStudentNumber();
         //获取经过md5加密后的密码
         String md5Password = DigestUtils.md5DigestAsHex(studentLoginDto.getPassword().getBytes());
+
+        log.info("登录的学生学号:{},密码:{}", studentId, md5Password);
 
         LambdaQueryWrapper<Students> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Students::getStudentNumber, studentId)

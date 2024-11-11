@@ -27,11 +27,11 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         //3.获取请求头中的令牌（token）
         String newJwt = request.getHeader("token");
-        try{
+        try {
             //如果前端没有传递过来token则该数组为空 为报出空异常
             String[] split = newJwt.split(" ");
             String jwt = split[1];
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             log.info("未携带token");
             Result<String> error = Result.error("NOT_LOGIN");
@@ -71,7 +71,18 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         log.info("令牌合法，放行");
         //6.解析jwt令牌中的id属性 并强转为Integer类型 表示用户i d
         Claims claims = JwtUtils.parseJWT(jwt);
-        Long Id = (Long) claims.get("id");
+        //这其实是一个很怪的问题 明明在封装的时候是用的long类型 ->会根据当前的id值在封装claims自动选择合适的类型
+        Object id = claims.get("id");
+
+        long Id; // 先初始化Id为一个默认值，以便在后续处理中使用
+
+        //当前的id是 Long 类型
+        if (id instanceof Long) {
+            Id = (long) id;
+        } else { //当前id 是 Integer类型
+            Id = ((Integer) id).longValue();
+        }
+
         BaseContext.setCurrentId(Id);//设置当前线程id
 
         //7.放行
