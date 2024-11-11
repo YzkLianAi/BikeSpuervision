@@ -8,7 +8,9 @@ import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
 
-
+/**
+ * 学生表(Students)实体类
+ */
 @TableName(value ="students")
 @Data
 public class Students implements Serializable {

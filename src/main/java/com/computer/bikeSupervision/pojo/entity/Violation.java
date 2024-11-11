@@ -8,7 +8,9 @@ import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
 
-
+/**
+ * 违法审核表(violation)实体类
+ */
 @TableName(value ="violation")
 @Data
 public class Violation implements Serializable {

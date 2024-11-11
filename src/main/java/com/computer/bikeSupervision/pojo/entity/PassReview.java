@@ -9,6 +9,9 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * 通行审核表(PassReview)实体类
+ */
 @TableName(value ="pass_review")
 @Data
 public class PassReview implements Serializable {

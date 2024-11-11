@@ -3,7 +3,9 @@ package com.computer.bikeSupervision.pojo.vo;
 import lombok.Data;
 
 @Data
-//学生数据二维码封装类
+/*
+  学生二维码信息类
+ */
 public class StudentSQVo {
     //姓名
     private String studentName;
