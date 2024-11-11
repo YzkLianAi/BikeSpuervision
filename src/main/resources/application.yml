@@ -1,0 +1,50 @@
+server:
+  port: 8082
+spring:
+  application:
+    #应用的名称，可选
+    name: human-resource-management
+  datasource:
+    druid:
+      #数据库连接池配置 用户名和密码换成自己的
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/bike_supervision?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: root
+      password: 20040412
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+mybatis:
+
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.sjq.humanResource.pojo.entity
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+
+
+
+#日志管理
+logging:
+  level:
+    com:
+      sky:
+        mapper: debug
+        service: info
+        controller: info
+
+#阿里云路径配置
+aliyun:
+  oss:
+    bucketName: human-resource-shujuku
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+
+
+qiniu:
+  accessKey: tVc-lUgepzNnwazUhc-D3mqGhoAV4V7iUkNErtb2
+  secretKey: BJYdZN-0tMc4Q3j5IY9afYPPRSlfmBGzzkcwoQd2
+  bucketName: picture-sq
+  domain: sms2vc4tk.hb-bkt.clouddn.com
