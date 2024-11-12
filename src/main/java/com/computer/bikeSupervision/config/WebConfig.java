@@ -25,6 +25,9 @@ public class WebConfig implements WebMvcConfigurer {
         List<String> list = new ArrayList<>();
         //这里添加不需要被拦截的路径
         list.add("/Students/login");
+        list.add("/Students/register");
+
+        log.info("排除拦截路径: {}", list);
 
         registry.addInterceptor(loginCheckInterceptor).addPathPatterns("/**").excludePathPatterns(list);
         //拦截所有路径 除了 那些指定的不需要被拦截的路径

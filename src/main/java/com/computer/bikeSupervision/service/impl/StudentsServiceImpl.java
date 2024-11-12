@@ -1,18 +1,26 @@
 package com.computer.bikeSupervision.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.computer.bikeSupervision.common.CustomException;
 import com.computer.bikeSupervision.mapper.StudentsMapper;
 import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.pojo.vo.StudentSQVo;
 import com.computer.bikeSupervision.service.StudentsService;
+import com.computer.bikeSupervision.utils.JwtUtils;
 import com.computer.bikeSupervision.utils.QRCodeGenerator;
 import com.computer.bikeSupervision.utils.QiniuCloudUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -24,6 +32,13 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
     @Autowired
     private QiniuCloudUtils qiniuCloudUtils;
 
+    /**
+     * 学生二维码生成
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
     @Override
     public String generateSqCode(Long id) throws Exception {
         //根据id查询当前人的信息
@@ -53,6 +68,62 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
         this.updateById(student);
 
         return url;
+    }
+
+    /**
+     * 学生登录
+     * @param studentId
+     * @param md5Password
+     * @return
+     */
+    @Override
+    public String login(String studentId, String md5Password) {
+
+        LambdaQueryWrapper<Students> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Students::getStudentNumber, studentId)
+                .eq(Students::getPassword, md5Password);
+
+        Students student = this.getOne(queryWrapper);
+        if (student != null) {
+            Map<String, Object> claims = new HashMap<>();
+
+            claims.put("id", student.getId());
+            claims.put("name", student.getStudentName());
+            claims.put("number", student.getStudentNumber());
+
+            String jwt = JwtUtils.generateJwt(claims);
+            String token = "Bearea" + " " + jwt;
+            log.info(token);
+            //将生成的令牌返回 后续前端的每次请求都必须携带这个令牌
+            return token;
+        }
+        throw new CustomException("用户名或密码错误");
+
+    }
+
+    /**
+     * 分页查询学生信息
+     * @param page
+     * @param pageSize
+     * @param name
+     * @return
+     */
+    @Override
+    public Page<Students> getStudentsPage(int page, int pageSize, String name) {
+        //构造分页构造器
+        Page<Students> pageInfo = new Page<>(page, pageSize);
+
+        //构造条件构造器
+        LambdaQueryWrapper<Students> queryWrapper = new LambdaQueryWrapper<>();
+        //添加过滤条件
+        queryWrapper.like(StringUtils.isNotEmpty(name), Students::getStudentName, name);
+        //添加排序条件
+        //根据最后的更新时间进行降序排序 Desc：降序 Asc：升序
+        queryWrapper.orderByDesc(Students::getUpdateTime);
+
+        //执行查询
+        this.page(pageInfo, queryWrapper);
+        return pageInfo;
     }
 }
 

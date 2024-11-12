@@ -25,7 +25,7 @@ mybatis:
     #开启驼峰命名
     map-underscore-to-camel-case: true
 
-##mybatis-plus配置
+#mybatis-plus配置
 #mybatis-plus:
 #  type-aliases-package: com.computer.bikeSupervision.pojo.entity
 
