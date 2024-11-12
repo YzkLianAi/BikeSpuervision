@@ -43,7 +43,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         //如果上面能走通则说明能获取到token 下面就是解析token是否正确
         String[] split = newJwt.split(" ");
         String jwt = split[1];
-        log.info(jwt);
+        log.info("处理好后的令牌信息为：{}", jwt);
 
         //4.判断令牌是否存在 如果不存在 返回一个错误结果（未登录）
         if (!StringUtils.hasLength(jwt)) { //如果 jwt为null 那么取反的结果就是true
