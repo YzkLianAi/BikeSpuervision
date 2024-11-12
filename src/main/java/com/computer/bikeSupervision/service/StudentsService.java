@@ -6,4 +6,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface StudentsService extends IService<Students> {
 
+    String generateSqCode(Long id) throws Exception;
 }
