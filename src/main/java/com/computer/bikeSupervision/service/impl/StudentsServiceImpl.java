@@ -42,32 +42,35 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
      */
     @Override
     public String generateSqCode(Long id) throws Exception {
-        //根据id查询当前人的信息
+        // 根据id查询当前人的信息
         Students student = this.getById(id);
-        /*if (student.getPlateNumber() == null){
+        // 断是否绑定车牌号和通行证号
+        if (student.getPlateNumber() == null){
             throw new CustomException("请先绑定车牌号");
         }
 
         if (student.getPassNumber() == null){
             throw new CustomException("请先绑定通行证号");
-        }*/
+        }
 
         StudentSQVo studentSQVo = new StudentSQVo();
-        //第一个参数是原始数据 第二参数 为 拷贝的对象目标
+        // 第一个参数是原始数据 第二参数 为 拷贝的对象目标
         BeanUtils.copyProperties(student, studentSQVo);
 
         log.info("拷贝好的属性：{}", studentSQVo);
-        //将实体类转换成json格式的数据 用于生成二维码
+        // 将实体类转换成json格式的数据 用于生成二维码
         String json = JSONObject.toJSONString(studentSQVo);
 
-        //将此部分数据作为内容 用于生成二维码
+        // 将此部分数据作为内容 用于生成二维码图片
         MultipartFile image = qrCodeGenerator.generateQRCodeAsMultipartFile(json);
+        // 将二维码上传到七牛云
         String url = qiniuCloudUtils.uploadImage(image);
 
-        //将url保存到学生的二维码云端路径字段当中
+        // 将url保存到学生的二维码云端路径字段当中
         student.setQrCode(url);
+        // 更新学生信息
         this.updateById(student);
-
+        // 返回url路径
         return url;
     }
 
@@ -129,6 +132,10 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
         return pageInfo;
     }
 
+    /**
+     * 注册信息配置
+     * @param newStudent
+     */
     @Override
     public void register(Students newStudent) {
         //需要重新设置一下createUser 和 updateUser
