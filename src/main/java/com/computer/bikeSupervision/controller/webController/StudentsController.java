@@ -1,4 +1,4 @@
-package com.computer.bikeSupervision.controller;
+package com.computer.bikeSupervision.controller.webController;
 
 
 import cn.hutool.core.bean.BeanUtil;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Api(tags = "学生信息管理")
 @CrossOrigin
-@RequestMapping("/Students")
+@RequestMapping("/Web/Students")
 public class StudentsController {
     @Autowired
     StudentsService studentsService;
@@ -51,11 +51,8 @@ public class StudentsController {
         Students newStudent = BeanUtil.copyProperties(student, Students.class);
         //执行新增操作
         studentsService.save(newStudent);
-
-        //需要重新设置一下createUser 和 updateUser
-        newStudent.setCreateUser(newStudent.getId());
-        log.info("新注册的学生信息:{}", newStudent);
-        studentsService.updateById(newStudent);
+        //配置注册信息
+        studentsService.register(newStudent);
 
         //返回注册成功
         return Result.success("注册成功");

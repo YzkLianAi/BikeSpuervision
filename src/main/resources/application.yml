@@ -48,6 +48,6 @@ aliyun:
 qiniu:
   accessKey: tVc-lUgepzNnwazUhc-D3mqGhoAV4V7iUkNErtb2
   secretKey: BJYdZN-0tMc4Q3j5IY9afYPPRSlfmBGzzkcwoQd2
-  bucketName: picture-sq
-  domain: sms2vc4tk.hb-bkt.clouddn.com
+  bucketName: text-sq
+  domain: sobon725v.hb-bkt.clouddn.com
 

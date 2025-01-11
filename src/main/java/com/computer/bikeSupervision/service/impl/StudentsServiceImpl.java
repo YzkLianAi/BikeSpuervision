@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.CustomException;
 import com.computer.bikeSupervision.mapper.StudentsMapper;
 import com.computer.bikeSupervision.pojo.entity.Students;
@@ -72,6 +73,7 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
 
     /**
      * 学生登录
+     *
      * @param studentId
      * @param md5Password
      * @return
@@ -103,6 +105,7 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
 
     /**
      * 分页查询学生信息
+     *
      * @param page
      * @param pageSize
      * @param name
@@ -124,6 +127,15 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
         //执行查询
         this.page(pageInfo, queryWrapper);
         return pageInfo;
+    }
+
+    @Override
+    public void register(Students newStudent) {
+        //需要重新设置一下createUser 和 updateUser
+        BaseContext.setCurrentId(newStudent.getId());
+        newStudent.setCreateUser(newStudent.getId());
+        log.info("新注册的学生信息:{}", newStudent);
+        this.updateById(newStudent);
     }
 }
 

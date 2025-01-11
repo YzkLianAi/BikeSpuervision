@@ -24,8 +24,8 @@ public class WebConfig implements WebMvcConfigurer {
         log.info("扩展拦截器...");
         List<String> list = new ArrayList<>();
         //这里添加不需要被拦截的路径
-        list.add("/Students/login");
-        list.add("/Students/register");
+        list.add("/Web/Students/login");
+        list.add("/Web/Students/register");
 
         log.info("排除拦截路径: {}", list);
 
