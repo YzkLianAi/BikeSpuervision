@@ -1,0 +1,13 @@
+package com.computer.bikeSupervision.service;
+
+import com.computer.bikeSupervision.pojo.entity.Administrator;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+* @author Wang
+* @description 针对表【administrator】的数据库操作Service
+* @createDate 2025-01-14 13:47:21
+*/
+public interface AdministratorService extends IService<Administrator> {
+
+}
