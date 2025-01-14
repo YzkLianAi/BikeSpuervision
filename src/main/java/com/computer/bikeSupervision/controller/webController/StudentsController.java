@@ -70,7 +70,7 @@ public class StudentsController {
     }
 
     @ApiOperation(value = "学生信息修改")
-    @PutMapping("/update")
+    @PostMapping("/update")
     public Result<String> updateStudent(@ApiParam("学生信息") @RequestBody Students students) {
         log.info("学生信息修改:{}", students);
         //修改学生信息
@@ -81,10 +81,10 @@ public class StudentsController {
 
 
     @ApiOperation(value = "学生信息分页查询")
-    @GetMapping("/page")
+    @GetMapping("/StudentsPage")
     public Result<Page<Students>> studentPage(@RequestParam(defaultValue = "1") int page,
-                                       @RequestParam(defaultValue = "10") int pageSize,
-                                       String name) {
+                                              @RequestParam(defaultValue = "10") int pageSize,
+                                              String name) {
 
         log.info("page = {} , pageSize = {}, name = {}", page, pageSize, name);
 
