@@ -82,7 +82,7 @@ public class StudentsController {
 
     @ApiOperation(value = "学生信息分页查询")
     @GetMapping("/page")
-    public Result<Page<Students>> page(@RequestParam(defaultValue = "1") int page,
+    public Result<Page<Students>> studentPage(@RequestParam(defaultValue = "1") int page,
                                        @RequestParam(defaultValue = "10") int pageSize,
                                        String name) {
 
