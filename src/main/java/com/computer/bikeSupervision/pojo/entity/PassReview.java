@@ -22,6 +22,12 @@ public class PassReview implements Serializable {
     private Long id;
 
     /**
+     * 所属学校
+     */
+    @TableField(value = "school")
+    private String school;
+
+    /**
      * 学院
      */
     @TableField(value = "college")

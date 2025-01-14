@@ -1,20 +1,17 @@
-package com.computer.bikeSupervision.pojo.entity;
+package com.computer.bikeSupervision.pojo.vo;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 违法信息审核(violation)实体类
+ * 违法信息分页查询
  */
-@TableName(value = "violation")
 @Data
-public class Violation implements Serializable {
+public class ViolationPageVo {
     /**
      * 主键id
      */
@@ -56,12 +53,6 @@ public class Violation implements Serializable {
      */
     @TableField(value = "check_status")
     private String checkStatus;
-
-    /**
-     * 处理状态(0表示未处理，1表示已处理)
-     */
-    @TableField(value = "deal_status")
-    private String dealStatus;
 
     /**
      * 创建时间

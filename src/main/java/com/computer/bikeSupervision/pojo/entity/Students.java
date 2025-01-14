@@ -39,6 +39,14 @@ public class Students implements Serializable {
     @TableField(value = "password")
     private String password;
 
+
+    /**
+     * 性别
+     */
+    @TableField(value = "gender")
+    private String gender;
+
+
     /**
      * 电话
      */
