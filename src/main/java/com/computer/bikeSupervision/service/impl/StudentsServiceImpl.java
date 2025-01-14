@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -45,13 +46,13 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
         // 根据id查询当前人的信息
         Students student = this.getById(id);
         // 断是否绑定车牌号和通行证号
-        if (student.getPlateNumber() == null){
+        /*if (student.getPlateNumber() == null){
             throw new CustomException("请先绑定车牌号");
         }
 
         if (student.getPassNumber() == null){
             throw new CustomException("请先绑定通行证号");
-        }
+        }*/
 
         StudentSQVo studentSQVo = new StudentSQVo();
         // 第一个参数是原始数据 第二参数 为 拷贝的对象目标
@@ -134,6 +135,7 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
 
     /**
      * 注册信息配置
+     *
      * @param newStudent
      */
     @Override
@@ -143,6 +145,24 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
         newStudent.setCreateUser(newStudent.getId());
         log.info("新注册的学生信息:{}", newStudent);
         this.updateById(newStudent);
+    }
+
+    /**
+     * 根据id修改学生信息
+     *
+     * @param students
+     */
+    @Override
+    public void update(Students students) {
+        // 需要先比对密码是否经过修改 -> 如果密码是将 123456 重新加密后的结果 则说明密码没有经过修改不需要再经过md5加密
+        // 将其重新设置成 123456 经过md5加密后的结果
+        if (students.getPassword().equals(DigestUtils.md5DigestAsHex("123456".getBytes()))) {
+            students.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+        } else {
+            students.setPassword(DigestUtils.md5DigestAsHex(students.getPassword().getBytes()));
+        }
+
+        this.updateById(students);
     }
 }
 

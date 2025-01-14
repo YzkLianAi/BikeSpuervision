@@ -63,7 +63,6 @@ public class StudentsController {
     public Result<Students> getStudentById() {
         //根据当前线程获取id
         Long currentId = BaseContext.getCurrentId();
-
         //获取匹配的学生信息
         Students student = studentsService.getById(currentId);
 
@@ -74,12 +73,8 @@ public class StudentsController {
     @PutMapping("/update")
     public Result<String> updateStudent(@ApiParam("学生信息") @RequestBody Students students) {
         log.info("学生信息修改:{}", students);
-        //获取当前线程id
-        Long currentId = BaseContext.getCurrentId();
-        //设置当前id
-        students.setId(currentId);
-        //根据id进行修改
-        studentsService.updateById(students);
+        //修改学生信息
+        studentsService.update(students);
 
         return Result.success("修改成功");
     }
