@@ -38,7 +38,7 @@ public class StudentsController {
 
         String token = studentsService.login(studentId, md5Password);
 
-        return Result.success(token);
+        return Result.setToken(token);
 
     }
 
