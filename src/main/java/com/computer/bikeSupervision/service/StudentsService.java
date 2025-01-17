@@ -1,6 +1,7 @@
 package com.computer.bikeSupervision.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
 import com.computer.bikeSupervision.pojo.entity.Students;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,11 +18,9 @@ public interface StudentsService extends IService<Students> {
 
     /**
      * 登录
-     * @param studentId
-     * @param md5Password
      * @return
      */
-    String login(String studentId, String md5Password);
+    String login(StudentLoginDto studentLoginDto);
 
     /**
      * 分页查询学生信息

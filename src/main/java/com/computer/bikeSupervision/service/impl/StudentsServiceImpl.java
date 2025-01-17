@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.CustomException;
 import com.computer.bikeSupervision.mapper.StudentsMapper;
+import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
 import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.service.StudentsService;
 import com.computer.bikeSupervision.utils.JwtUtils;
@@ -65,17 +66,14 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
 
     /**
      * 学生登录
-     *
-     * @param studentId
-     * @param md5Password
-     * @return
      */
     @Override
-    public String login(String studentId, String md5Password) {
+    public String login(StudentLoginDto studentLoginDto) {
 
         LambdaQueryWrapper<Students> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Students::getStudentNumber, studentId)
-                .eq(Students::getPassword, md5Password);
+        queryWrapper.eq(Students::getStudentNumber, studentLoginDto.getStudentNumber())
+                .eq(Students::getPassword, studentLoginDto.getPassword())
+                .eq(Students::getSchoolName, studentLoginDto.getSchoolName());
 
         Students student = this.getOne(queryWrapper);
         if (student != null) {
