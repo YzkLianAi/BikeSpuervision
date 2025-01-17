@@ -9,11 +9,8 @@ import com.computer.bikeSupervision.mapper.StudentsMapper;
 import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.service.StudentsService;
 import com.computer.bikeSupervision.utils.JwtUtils;
-import com.computer.bikeSupervision.utils.QRCodeGenerator;
-import com.computer.bikeSupervision.utils.QiniuCloudUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -23,12 +20,6 @@ import java.util.Map;
 @Slf4j
 @Service
 public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> implements StudentsService {
-
-    @Autowired
-    private QRCodeGenerator qrCodeGenerator;
-
-    @Autowired
-    private QiniuCloudUtils qiniuCloudUtils;
 
     /**
      * 学生二维码生成
@@ -138,9 +129,12 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
     @Override
     public void register(Students newStudent) {
         //需要重新设置一下createUser 和 updateUser
+        //设置当前线程id 用于后续公共字段填充
         BaseContext.setCurrentId(newStudent.getId());
+        //自己是自己的创建人
         newStudent.setCreateUser(newStudent.getId());
         log.info("新注册的学生信息:{}", newStudent);
+        //创建时间在新增的时候就已经提供了 此处只会修改 修改时间 和 创建人
         this.updateById(newStudent);
     }
 
