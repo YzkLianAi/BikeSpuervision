@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.pojo.vo.StudentSQVo;
+import com.computer.bikeSupervision.service.PlatePassService;
 import com.computer.bikeSupervision.service.StudentsService;
 import com.computer.bikeSupervision.utils.QRCodeGenerator;
 import io.swagger.annotations.Api;
@@ -24,6 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/SQ")
 public class SQController {
     @Autowired
+    PlatePassService platePassService;
+
+    @Autowired
     StudentsService studentsService;
 
     @Autowired
@@ -35,7 +39,7 @@ public class SQController {
         //获取当前登陆人的id
         Long id = BaseContext.getCurrentId();
         //生成二维码 获取云端存储的url路径并返回给前端
-        String url = studentsService.generateSqCode(id);
+        String url = platePassService.generateSqCode(id);
 
         log.info("上传成功，url为：{}", url);
         return Result.success(url);

@@ -1,6 +1,5 @@
 package com.computer.bikeSupervision.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,18 +7,15 @@ import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.CustomException;
 import com.computer.bikeSupervision.mapper.StudentsMapper;
 import com.computer.bikeSupervision.pojo.entity.Students;
-import com.computer.bikeSupervision.pojo.vo.StudentSQVo;
 import com.computer.bikeSupervision.service.StudentsService;
 import com.computer.bikeSupervision.utils.JwtUtils;
 import com.computer.bikeSupervision.utils.QRCodeGenerator;
 import com.computer.bikeSupervision.utils.QiniuCloudUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,18 +37,19 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
      * @return
      * @throws Exception
      */
-    @Override
+    //TODO 后续要删除
+    /*@Override
     public String generateSqCode(Long id) throws Exception {
         // 根据id查询当前人的信息
         Students student = this.getById(id);
         // 断是否绑定车牌号和通行证号
-        /*if (student.getPlateNumber() == null){
+        if (student.getPlateNumber() == null){
             throw new CustomException("请先绑定车牌号");
         }
 
         if (student.getPassNumber() == null){
             throw new CustomException("请先绑定通行证号");
-        }*/
+        }
 
         StudentSQVo studentSQVo = new StudentSQVo();
         // 第一个参数是原始数据 第二参数 为 拷贝的对象目标
@@ -73,7 +70,7 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
         this.updateById(student);
         // 返回url路径
         return url;
-    }
+    }*/
 
     /**
      * 学生登录

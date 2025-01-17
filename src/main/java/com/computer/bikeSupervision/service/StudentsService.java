@@ -13,7 +13,7 @@ public interface StudentsService extends IService<Students> {
      * @return
      * @throws Exception
      */
-    String generateSqCode(Long id) throws Exception;
+    //String generateSqCode(Long id) throws Exception;
 
     /**
      * 登录

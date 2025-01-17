@@ -36,10 +36,10 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
         //查询操作人信息
         Administrator admin = administratorService.getOne(adminWrapper);
         //获取其对应学校号码
-        String school = admin.getSchool();
-        //根据学校号码查询违规信息
+        String schoolName = admin.getSchoolName();
+        //查询管理员 所属学校内的违章信息
         LambdaQueryWrapper<Violation> violationWrapper = new LambdaQueryWrapper<>();
-        violationWrapper.eq(Violation::getSchool, school)
+        violationWrapper.eq(Violation::getSchoolName, schoolName)
                 .eq(StringUtils.isNotEmpty(railway), Violation::getRailway, railway)
                 .eq(StringUtils.isNotEmpty(licencePlate), Violation::getLicencePlate, licencePlate)
                 .eq(Violation::getCheckStatus, "0");
@@ -49,6 +49,7 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
         List<ViolationPageVo> violationPageVos = BeanUtil.copyToList(violations, ViolationPageVo.class);
         //将查询结果转换为Page对象
         Page<ViolationPageVo> violationPage = (Page<ViolationPageVo>) violationPageVos;
+
         return new PageBean(violationPage.getTotal(), violationPage.getResult());
     }
 }

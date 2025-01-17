@@ -71,23 +71,6 @@ public class Students implements Serializable {
     @TableField(value = "image")
     private String image;
 
-    /**
-     * 车牌号
-     */
-    @TableField(value = "plate_number")
-    private String plateNumber;
-
-    /**
-     * 通行证号
-     */
-    @TableField(value = "pass_number")
-    private String passNumber;
-
-    /**
-     * 二维码云端路径
-     */
-    @TableField(value = "qr_code")
-    private String qrCode;
 
     /**
      * 创建时间
