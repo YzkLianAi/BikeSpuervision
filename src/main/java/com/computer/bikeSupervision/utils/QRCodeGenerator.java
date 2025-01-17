@@ -24,6 +24,13 @@ import java.util.UUID;
 @Component
 public class QRCodeGenerator {
 
+    /**
+     * 生成二维码
+     * @param content
+     * @return
+     * @throws WriterException
+     * @throws IOException
+     */
     public MultipartFile generateQRCodeAsMultipartFile(String content) throws WriterException, IOException {
         // 设置二维码的参数
         Map<EncodeHintType, Object> hints = new HashMap<>();
@@ -55,6 +62,15 @@ public class QRCodeGenerator {
     }
 
 
+    /**
+     * 解析二维码
+     * @param qrCodeImage
+     * @return
+     * @throws IOException
+     * @throws NotFoundException
+     * @throws FormatException
+     * @throws ChecksumException
+     */
     public String parseQRCodeData(MultipartFile qrCodeImage) throws IOException, NotFoundException, FormatException, ChecksumException {
         // 将MultipartFile转换为BufferedImage
         BufferedImage bufferedImage = ImageIO.read(qrCodeImage.getInputStream());

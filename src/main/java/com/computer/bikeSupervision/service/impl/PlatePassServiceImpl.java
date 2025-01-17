@@ -9,6 +9,7 @@ import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.pojo.vo.StudentSQVo;
 import com.computer.bikeSupervision.service.PlatePassService;
 import com.computer.bikeSupervision.mapper.PlatePassMapper;
+import com.computer.bikeSupervision.utils.AliOSSUtils;
 import com.computer.bikeSupervision.utils.QRCodeGenerator;
 import com.computer.bikeSupervision.utils.QiniuCloudUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,9 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
 
     @Autowired
     private QiniuCloudUtils qiniuCloudUtils;
+
+    @Autowired
+    private AliOSSUtils aliOSSUtils;
 
     public String generateSqCode(Long id) throws Exception {
         // 根据id查询当前人的信息
@@ -64,7 +68,7 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
         // 将此部分数据作为内容 用于生成二维码图片
         MultipartFile image = qrCodeGenerator.generateQRCodeAsMultipartFile(json);
         // 将二维码上传到七牛云
-        String url = qiniuCloudUtils.uploadImage(image);
+        String url = aliOSSUtils.upload(image);
 
         // 将url保存到学生的二维码云端路径字段当中
         one.setQrCode(url);

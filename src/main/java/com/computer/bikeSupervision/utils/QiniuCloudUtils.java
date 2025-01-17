@@ -22,14 +22,11 @@ public class QiniuCloudUtils {
     @Value("${qiniu.accessKey}")
     private String accessKey;
 
-
     @Value("${qiniu.secretKey}")
     private String secretKey;
 
-
     @Value("${qiniu.bucketName}")
     private String bucketName;
-
 
     @Value("${qiniu.domain}")
     private String domain;
