@@ -56,8 +56,8 @@ public class Students implements Serializable {
     /**
      * 学校名称
      */
-    @TableField(value = "school")
-    private String school;
+    @TableField(value = "school_name")
+    private String schoolName;
 
     /**
      * 学院

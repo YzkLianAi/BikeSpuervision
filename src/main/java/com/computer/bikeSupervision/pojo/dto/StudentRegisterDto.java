@@ -14,7 +14,7 @@ public class StudentRegisterDto {
     //学生学号
     private String studentNumber;
     //学校
-    private String school;
+    private String schoolName;
     //学院
     private String college;
 }

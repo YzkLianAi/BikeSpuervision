@@ -1,12 +1,12 @@
 package com.computer.bikeSupervision.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 监控日志
@@ -37,8 +37,8 @@ public class Monitor implements Serializable {
     /**
      * 监控所属学校
      */
-    @TableField(value = "school")
-    private String school;
+    @TableField(value = "school_name")
+    private String schoolName;
 
     /**
      * 创建日期

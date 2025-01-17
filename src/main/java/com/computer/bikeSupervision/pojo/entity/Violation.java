@@ -42,8 +42,8 @@ public class Violation implements Serializable {
     /**
      * 所属学校
      */
-    @TableField(value = "school")
-    private String school;
+    @TableField(value = "school_name")
+    private String schoolName;
 
     /**
      * 违法路段
