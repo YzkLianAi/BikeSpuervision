@@ -52,6 +52,31 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
 
         return new PageBean(violationPage.getTotal(), violationPage.getResult());
     }
+
+    @Override
+    public PageBean searchProgressPage(int pageNum, int pageSize, Long currentId) {
+        //首先获取当前操作人信息 查询其对应学校
+        LambdaQueryWrapper<Administrator> adminWrapper = new LambdaQueryWrapper<>();
+        adminWrapper.eq(Administrator::getId, currentId);
+
+        //查询操作人信息
+        Administrator admin = administratorService.getOne(adminWrapper);
+        //获取其对应学校号码
+        String schoolName = admin.getSchoolName();
+        LambdaQueryWrapper<Violation> violationWrapper = new LambdaQueryWrapper<>();
+        violationWrapper.eq(Violation::getSchoolName, schoolName)
+                .eq(Violation::getCheckStatus, "1")
+                .eq(Violation::getDealStatus, "0");
+
+        //查询信息
+        List<Violation> violations = this.list(violationWrapper);
+        List<ViolationPageVo> violationPageVos = BeanUtil.copyToList(violations, ViolationPageVo.class);
+        //将查询结果转换为Page对象
+        Page<ViolationPageVo> violationPage = (Page<ViolationPageVo>) violationPageVos;
+
+        return new PageBean(violationPage.getTotal(), violationPage.getResult());
+
+    }
 }
 
 

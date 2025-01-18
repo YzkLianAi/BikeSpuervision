@@ -36,11 +36,6 @@ public class ViolationPageVo {
     @TableField(value = "cause")
     private String cause;
 
-    /**
-     * 所属学校
-     */
-    @TableField(value = "school")
-    private String school;
 
     /**
      * 违法路段

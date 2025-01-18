@@ -83,7 +83,14 @@ public class ViolationController {
 
     @ApiOperation(value = "违法信息处理进度查看")
     @GetMapping("/violationProgress")
-    public Result<PageBean> violationProgress(){
-        return null;
+    public Result<PageBean> violationProgress(@RequestParam(defaultValue = "1") int pageNum,
+                                              @RequestParam(defaultValue = "10") int pageSize){
+
+        //获取当前线程操作人 id
+        Long currentId = BaseContext.getCurrentId();
+
+        PageBean pageBean = violationService.searchProgressPage(pageNum, pageSize,currentId);
+
+        return Result.success(pageBean);
     }
 }
