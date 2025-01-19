@@ -11,7 +11,7 @@ public interface ViolationService extends IService<Violation> {
      *
      * @param currentId
      */
-    PageBean searchPage(int pageNum, int pageSize, String railway, String licencePlate, Long currentId);
+    PageBean searchPage(Integer pageNum, Integer pageSize, String railway, String licencePlate, Long currentId);
 
 
     /**

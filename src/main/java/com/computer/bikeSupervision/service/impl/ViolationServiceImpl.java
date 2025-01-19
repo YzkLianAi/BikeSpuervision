@@ -1,13 +1,11 @@
 package com.computer.bikeSupervision.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.computer.bikeSupervision.mapper.ViolationMapper;
 import com.computer.bikeSupervision.pojo.entity.Administrator;
 import com.computer.bikeSupervision.pojo.entity.PageBean;
 import com.computer.bikeSupervision.pojo.entity.Violation;
-import com.computer.bikeSupervision.pojo.vo.ViolationPageVo;
 import com.computer.bikeSupervision.service.AdministratorService;
 import com.computer.bikeSupervision.service.ViolationService;
 import com.github.pagehelper.Page;
@@ -15,8 +13,6 @@ import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 
 @Service
@@ -26,8 +22,9 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
 
 
     @Override
-    public PageBean searchPage(int pageNum, int pageSize, String railway, String licencePlate, Long currentId) {
-        PageHelper.startPage(pageNum, pageSize);
+    public PageBean searchPage(Integer pageNum, Integer pageSize, String railway, String licencePlate, Long currentId) {
+        //1.设置分页参数
+        PageHelper.startPage(pageNum, pageSize);//设置分页参数
 
         //首先获取当前操作人信息 查询其对应学校
         LambdaQueryWrapper<Administrator> adminWrapper = new LambdaQueryWrapper<>();
@@ -44,13 +41,13 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
                 .eq(StringUtils.isNotEmpty(licencePlate), Violation::getLicencePlate, licencePlate)
                 .eq(Violation::getCheckStatus, "0");
 
-        //查询信息
-        List<Violation> violations = this.list(violationWrapper);
-        List<ViolationPageVo> violationPageVos = BeanUtil.copyToList(violations, ViolationPageVo.class);
-        //将查询结果转换为Page对象
-        Page<ViolationPageVo> violationPage = (Page<ViolationPageVo>) violationPageVos;
+        //TODO 为什么不能和之前的项目那样直接转换呢？？？
+        //List<Violation> list = this.list(violationWrapper);
 
-        return new PageBean(violationPage.getTotal(), violationPage.getResult());
+        Page<Violation> p = PageHelper.startPage(pageNum, pageSize)
+                .doSelectPage(() -> this.list(violationWrapper));
+
+        return new PageBean(p.getTotal(), p.getResult());
     }
 
     @Override
@@ -68,13 +65,10 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
                 .eq(Violation::getCheckStatus, "1")
                 .eq(Violation::getDealStatus, "0");
 
-        //查询信息
-        List<Violation> violations = this.list(violationWrapper);
-        List<ViolationPageVo> violationPageVos = BeanUtil.copyToList(violations, ViolationPageVo.class);
-        //将查询结果转换为Page对象
-        Page<ViolationPageVo> violationPage = (Page<ViolationPageVo>) violationPageVos;
+        Page<Violation> p = PageHelper.startPage(pageNum, pageSize)
+                .doSelectPage(() -> this.list(violationWrapper));
 
-        return new PageBean(violationPage.getTotal(), violationPage.getResult());
+        return new PageBean(p.getTotal(), p.getResult());
 
     }
 }

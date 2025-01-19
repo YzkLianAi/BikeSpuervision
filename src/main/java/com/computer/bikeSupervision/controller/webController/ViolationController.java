@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Api(tags = "违法信息管理")
 @CrossOrigin
-@RequestMapping("/Web/Students")
+@RequestMapping("/Web/Violation")
 public class ViolationController {
 
     @Autowired
@@ -44,8 +44,8 @@ public class ViolationController {
 
     @ApiOperation(value = "违法信息分页查询")
     @GetMapping("/violationsPage")
-    public Result<PageBean> getViolations(@RequestParam(defaultValue = "1") int pageNum,
-                                          @RequestParam(defaultValue = "10") int pageSize,
+    public Result<PageBean> getViolations(@RequestParam(defaultValue = "1") Integer pageNum,
+                                          @RequestParam(defaultValue = "10") Integer pageSize,
                                           String railway, String licencePlate) {
 
         log.info("分页信息：pageNum: {}, pageSize: {}, railway: {}, licencePlate: {}", pageNum, pageSize, railway, licencePlate);
