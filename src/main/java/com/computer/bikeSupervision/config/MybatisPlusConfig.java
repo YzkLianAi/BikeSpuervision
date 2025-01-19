@@ -9,7 +9,7 @@ public class MybatisPlusConfig {
 
     //让spring来管理它
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor(){
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
         //将MybatisPlusInterceptor这个对象new一下成mybatisPlusInterceptor
         MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
         //然后再调用mybatisPlusInterceptor里面的方法
