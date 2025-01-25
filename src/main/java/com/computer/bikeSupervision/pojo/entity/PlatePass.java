@@ -46,6 +46,12 @@ public class PlatePass implements Serializable {
     private String passNumber;
 
     /**
+     * 通行证图片云端路径
+     */
+    @TableField(value = "pass_image")
+    private String passImage;
+
+    /**
      * 二维码云端路径
      */
     @TableField(value = "qr_code")

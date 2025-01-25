@@ -27,7 +27,7 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
         implements PlatePassService {
 
     @Autowired
-    StudentsMapper studentsMapper;
+    private StudentsMapper studentsMapper;
 
     @Autowired
     private QRCodeGenerator qrCodeGenerator;
