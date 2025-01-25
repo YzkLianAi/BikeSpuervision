@@ -1,15 +1,16 @@
 package com.computer.bikeSupervision.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.CustomException;
 import com.computer.bikeSupervision.mapper.StudentsMapper;
 import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
+import com.computer.bikeSupervision.pojo.entity.PageBean;
 import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.service.StudentsService;
 import com.computer.bikeSupervision.utils.JwtUtils;
+import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -102,9 +103,9 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
      * @return
      */
     @Override
-    public Page<Students> getStudentsPage(int page, int pageSize, String name) {
-        //构造分页构造器
-        Page<Students> pageInfo = new Page<>(page, pageSize);
+    public PageBean getStudentsPage(int page, int pageSize, String name) {
+        //1.设置分页参数
+        PageHelper.startPage(page, pageSize);//设置分页参数
 
         //构造条件构造器
         LambdaQueryWrapper<Students> queryWrapper = new LambdaQueryWrapper<>();
@@ -114,9 +115,11 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
         //根据最后的更新时间进行降序排序 Desc：降序 Asc：升序
         queryWrapper.orderByDesc(Students::getUpdateTime);
 
-        //执行查询
-        this.page(pageInfo, queryWrapper);
-        return pageInfo;
+        com.github.pagehelper.Page<Students> p = PageHelper.startPage(page, pageSize)
+                .doSelectPage(() -> this.list(queryWrapper));
+
+        return new PageBean(p.getTotal(), p.getResult());
+
     }
 
     /**

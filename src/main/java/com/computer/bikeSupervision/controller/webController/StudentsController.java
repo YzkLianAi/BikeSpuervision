@@ -2,11 +2,11 @@ package com.computer.bikeSupervision.controller.webController;
 
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
 import com.computer.bikeSupervision.pojo.dto.StudentRegisterDto;
+import com.computer.bikeSupervision.pojo.entity.PageBean;
 import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.service.StudentsService;
 import io.swagger.annotations.Api;
@@ -82,13 +82,17 @@ public class StudentsController {
 
     @ApiOperation(value = "学生信息分页查询")
     @GetMapping("/StudentsPage")
-    public Result<Page<Students>> studentPage(@RequestParam(defaultValue = "1") int page,
-                                              @RequestParam(defaultValue = "10") int pageSize,
-                                              String name) {
+    public Result<PageBean> studentPage(@RequestParam(defaultValue = "1") int page,
+                                        @RequestParam(defaultValue = "10") int pageSize,
+                                        String name) {
+        Long currentId = BaseContext.getCurrentId();
+        log.info("当前操作人id:{}", currentId);
+
+
 
         log.info("page = {} , pageSize = {}, name = {}", page, pageSize, name);
 
-        Page<Students> pageInfo = studentsService.getStudentsPage(page, pageSize, name);
+        PageBean pageInfo = studentsService.getStudentsPage(page, pageSize, name);
 
         return Result.success(pageInfo);
     }

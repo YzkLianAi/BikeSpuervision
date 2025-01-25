@@ -1,9 +1,9 @@
 package com.computer.bikeSupervision.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
-import com.computer.bikeSupervision.pojo.entity.Students;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
+import com.computer.bikeSupervision.pojo.entity.PageBean;
+import com.computer.bikeSupervision.pojo.entity.Students;
 
 
 public interface StudentsService extends IService<Students> {
@@ -29,7 +29,7 @@ public interface StudentsService extends IService<Students> {
      * @param name
      * @return
      */
-    Page<Students> getStudentsPage(int page, int pageSize, String name);
+    PageBean getStudentsPage(int page, int pageSize, String name);
 
     /**
      * 注册
