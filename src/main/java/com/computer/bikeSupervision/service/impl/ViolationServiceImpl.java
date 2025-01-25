@@ -41,6 +41,7 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
                 .eq(StringUtils.isNotEmpty(licencePlate), Violation::getLicencePlate, licencePlate)
                 .eq(Violation::getCheckStatus, "0");
 
+        violationWrapper.orderByDesc(Violation::getUpdateTime);
         //TODO 为什么不能和之前的项目那样直接转换呢？？？
         //List<Violation> list = this.list(violationWrapper);
 
