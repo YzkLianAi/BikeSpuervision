@@ -72,6 +72,8 @@ public class ViolationController {
         Administrator administrator = administratorService.getOne(lambdaQueryWrapper);
         //权限校验
         if (administrator.getStatus().equals("0")){
+
+            //violation.setCheckStatus("1");
             violationService.updateById(violation);
 
             return Result.success("审核成功");

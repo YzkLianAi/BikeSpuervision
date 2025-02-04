@@ -36,11 +36,13 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
         String schoolName = admin.getSchoolName();
         //查询管理员 所属学校内的违章信息
         LambdaQueryWrapper<Violation> violationWrapper = new LambdaQueryWrapper<>();
+        // 查询的是未审核的信息
         violationWrapper.eq(Violation::getSchoolName, schoolName)
                 .eq(StringUtils.isNotEmpty(railway), Violation::getRailway, railway)
                 .eq(StringUtils.isNotEmpty(licencePlate), Violation::getLicencePlate, licencePlate)
                 .eq(Violation::getCheckStatus, "0");
 
+        //根据 修改时间降序
         violationWrapper.orderByDesc(Violation::getUpdateTime);
         //TODO 为什么不能和之前的项目那样直接转换呢？？？
         //List<Violation> list = this.list(violationWrapper);
@@ -51,6 +53,13 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
         return new PageBean(p.getTotal(), p.getResult());
     }
 
+    /**
+     * 处理进度查询
+     * @param pageNum
+     * @param pageSize
+     * @param currentId
+     * @return
+     */
     @Override
     public PageBean searchProgressPage(int pageNum, int pageSize, Long currentId) {
         //首先获取当前操作人信息 查询其对应学校
@@ -62,6 +71,8 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
         //获取其对应学校号码
         String schoolName = admin.getSchoolName();
         LambdaQueryWrapper<Violation> violationWrapper = new LambdaQueryWrapper<>();
+
+        // 1表示的是 确认违法的 2表示的是未违法 进度查看当中 只查看 已违法的情况下的进度 为0的（表示未处理）
         violationWrapper.eq(Violation::getSchoolName, schoolName)
                 .eq(Violation::getCheckStatus, "1")
                 .eq(Violation::getDealStatus, "0");
