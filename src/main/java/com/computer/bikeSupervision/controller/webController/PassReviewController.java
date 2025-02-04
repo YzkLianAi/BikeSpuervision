@@ -5,9 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.pojo.dto.PassReviewAddDto;
-import com.computer.bikeSupervision.pojo.entity.PageBean;
-import com.computer.bikeSupervision.pojo.entity.PassReview;
-import com.computer.bikeSupervision.pojo.entity.Students;
+import com.computer.bikeSupervision.pojo.entity.*;
+import com.computer.bikeSupervision.service.AdministratorService;
 import com.computer.bikeSupervision.service.PassReviewService;
 import com.computer.bikeSupervision.service.StudentsService;
 import io.swagger.annotations.Api;
@@ -28,6 +27,9 @@ public class PassReviewController {
 
     @Autowired
     StudentsService studentsService;
+
+    @Autowired
+    AdministratorService administratorService;
 
     @ApiOperation(value = "通行证审核信息新增")
     @PostMapping("/addPassReview")
@@ -67,6 +69,30 @@ public class PassReviewController {
         PageBean pageBean = passReviewService.searchPage(pageNum, pageSize, currentId);
 
         return Result.success(pageBean);
+    }
+
+
+    @ApiOperation(value = "通行证信息审核")
+    @PostMapping("/passReviewAudit")
+    public Result<String> passReviewAudit(@RequestBody PassReview passReview) {
+        //就是修改违法信息当中 的 状态字段
+        log.info("通行证信息审核：{}",passReview);
+        // 获取当前线程操作人 id
+        Long currentId = BaseContext.getCurrentId();
+        log.info("当前操作人id：{}", currentId);
+        LambdaQueryWrapper<Administrator> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Administrator::getId, currentId);
+
+        Administrator administrator = administratorService.getOne(lambdaQueryWrapper);
+        //权限校验
+        if (administrator.getStatus().equals("0")){
+            // 0是未审核 1是已通过 2是未通过
+            // 未通过的话 还会传过来一个原因
+            passReviewService.updateById(passReview);
+            return Result.success("审核成功");
+        }else{
+            return Result.error("权限不足");
+        }
     }
 
 }
