@@ -29,7 +29,7 @@ public interface StudentsService extends IService<Students> {
      * @param name
      * @return
      */
-    PageBean getStudentsPage(int page, int pageSize, String name);
+    PageBean getStudentsPage(int page, int pageSize, String name,Long currentId);
 
     /**
      * 注册

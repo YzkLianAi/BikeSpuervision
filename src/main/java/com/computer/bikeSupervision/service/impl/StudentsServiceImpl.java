@@ -4,24 +4,40 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.CustomException;
+import com.computer.bikeSupervision.mapper.PlatePassMapper;
 import com.computer.bikeSupervision.mapper.StudentsMapper;
 import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
+import com.computer.bikeSupervision.pojo.entity.Administrator;
 import com.computer.bikeSupervision.pojo.entity.PageBean;
+import com.computer.bikeSupervision.pojo.entity.PlatePass;
 import com.computer.bikeSupervision.pojo.entity.Students;
+import com.computer.bikeSupervision.pojo.vo.StudentsPageVo;
+import com.computer.bikeSupervision.service.AdministratorService;
 import com.computer.bikeSupervision.service.StudentsService;
 import com.computer.bikeSupervision.utils.JwtUtils;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Service
 public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> implements StudentsService {
+
+    @Autowired
+    private AdministratorService administratorService;
+
+    @Autowired
+    private PlatePassMapper platePassMapper;
 
     /**
      * 学生二维码生成
@@ -103,22 +119,53 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
      * @return
      */
     @Override
-    public PageBean getStudentsPage(int page, int pageSize, String name) {
+    public PageBean getStudentsPage(int page, int pageSize, String name, Long currentId) {
         //1.设置分页参数
         PageHelper.startPage(page, pageSize);//设置分页参数
+
+        Administrator administrator = administratorService.getById(currentId);
+        String schoolName = administrator.getSchoolName();
 
         //构造条件构造器
         LambdaQueryWrapper<Students> queryWrapper = new LambdaQueryWrapper<>();
         //添加过滤条件
-        queryWrapper.like(StringUtils.isNotEmpty(name), Students::getStudentName, name);
+        queryWrapper.like(StringUtils.isNotEmpty(name), Students::getStudentName, name)
+                .eq(Students::getSchoolName, schoolName);
         //添加排序条件
         //根据最后的更新时间进行降序排序 Desc：降序 Asc：升序
         queryWrapper.orderByDesc(Students::getUpdateTime);
 
-        com.github.pagehelper.Page<Students> p = PageHelper.startPage(page, pageSize)
+        Page<Students> studentPage = PageHelper.startPage(page, pageSize)
                 .doSelectPage(() -> this.list(queryWrapper));
 
-        return new PageBean(p.getTotal(), p.getResult());
+        // 将 Students 列表转换为 StudentsPageVo 列表，并查询是否拥有电瓶车和通行证
+        List<StudentsPageVo> studentsPageVoList = new ArrayList<>();
+
+        for (Students student : studentPage.getResult()) {
+            StudentsPageVo studentsPageVo = new StudentsPageVo();
+            //先拷贝学生的基础信息数据
+            BeanUtils.copyProperties(student, studentsPageVo);
+
+            LambdaQueryWrapper<PlatePass> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(PlatePass::getStudentNumber, student.getStudentName());
+            // 查询该学生的通行审核记录
+            List<PlatePass> platePasses = platePassMapper.selectList(lambdaQueryWrapper);
+
+            // 判断是否拥有电瓶车和通行证
+            studentsPageVo.setHasBike(!platePasses.isEmpty() && StringUtils.isNotEmpty(platePasses.get(0).getPlateNumber()));
+            studentsPageVo.setHasPass(!platePasses.isEmpty() && StringUtils.isNotEmpty(platePasses.get(0).getPassNumber()));
+
+            studentsPageVoList.add(studentsPageVo);
+        }
+
+        // 手动构建 Page<StudentsPageVo> 对象
+        Page<StudentsPageVo> studentsPageVoPage = new Page<>();
+        studentsPageVoPage.setPageNum(studentPage.getPageNum());
+        studentsPageVoPage.setPageSize(studentPage.getPageSize());
+        studentsPageVoPage.setTotal(studentPage.getTotal());
+        studentsPageVoPage.addAll(studentsPageVoList);
+
+        return new PageBean(studentsPageVoPage.getTotal(), studentsPageVoPage.getResult());
 
     }
 

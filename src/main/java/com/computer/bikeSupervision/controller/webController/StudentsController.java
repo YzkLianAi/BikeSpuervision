@@ -89,10 +89,9 @@ public class StudentsController {
         log.info("当前操作人id:{}", currentId);
 
 
-
         log.info("page = {} , pageSize = {}, name = {}", page, pageSize, name);
 
-        PageBean pageInfo = studentsService.getStudentsPage(page, pageSize, name);
+        PageBean pageInfo = studentsService.getStudentsPage(page, pageSize, name, currentId);
 
         return Result.success(pageInfo);
     }
