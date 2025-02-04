@@ -44,7 +44,7 @@ public class ViolationPageVo {
     private String railway;
 
     /**
-     * 审核状态(0表示未审核，1表示已审核)
+     * 审核状态(0表示未审核，1表示违法，2表示未违法)
      */
     @TableField(value = "check_status")
     private String checkStatus;
