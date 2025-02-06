@@ -2,6 +2,7 @@ package com.computer.bikeSupervision.utils;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -13,10 +14,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+@Component
 public class ImageProcessorUtils {
     private static final String TEMPLATE_IMAGE_PATH = "path/to/your/template.png";
 
-    public static MultipartFile generatePassImage(String licensePlate, String passNumber) throws IOException {
+    public MultipartFile generatePassImage(String licensePlate, String passNumber) throws IOException {
         // 读取本地图片模板
         BufferedImage templateImage = ImageIO.read(new File(TEMPLATE_IMAGE_PATH));
 
@@ -53,7 +55,7 @@ public class ImageProcessorUtils {
         return new CommonsMultipartFile(fileItem);
     }
 
-    public static void saveImage(BufferedImage image, String outputPath) throws IOException {
+    public void saveImage(BufferedImage image, String outputPath) throws IOException {
         File output = new File(outputPath);
         ImageIO.write(image, "png", output);
     }

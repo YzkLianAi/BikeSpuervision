@@ -76,6 +76,12 @@ public class PassReview implements Serializable {
     private String status;
 
     /**
+     * 未通过的时候提供原因
+     */
+    @TableField(value = "cause")
+    private String cause;
+
+    /**
      * 创建时间
      */
 
