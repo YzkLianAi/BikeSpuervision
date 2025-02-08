@@ -1,5 +1,6 @@
 package com.computer.bikeSupervision.service;
 
+import com.computer.bikeSupervision.pojo.dto.UsedCarMarketPublishDto;
 import com.computer.bikeSupervision.pojo.entity.UsedCarMarket;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -8,4 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UsedCarMarketService extends IService<UsedCarMarket> {
 
+    void addUsedCarMarket(UsedCarMarketPublishDto usedCarMarketPublishDto, Long currentId);
 }

@@ -1,14 +1,9 @@
 package com.computer.bikeSupervision.controller.webController;
 
 
-import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.pojo.dto.UsedCarMarketPublishDto;
-import com.computer.bikeSupervision.pojo.entity.Students;
-import com.computer.bikeSupervision.pojo.entity.UsedCarMarket;
-import com.computer.bikeSupervision.service.StudentsService;
 import com.computer.bikeSupervision.service.UsedCarMarketService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -25,26 +20,14 @@ public class UsedCarMarketController {
     @Autowired
     UsedCarMarketService usedCarMarketService;
 
-    @Autowired
-    StudentsService studentsService;
 
     @PostMapping("/publish")
     public Result<String> publishUsedCarInfo(@RequestBody UsedCarMarketPublishDto usedCarMarketPublishDto) {
         //获取当前登陆人 id
         Long currentId = BaseContext.getCurrentId();
-
-        LambdaQueryWrapper<Students> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-
-        //根据当前登陆人 id 查询学生信息
-        lambdaQueryWrapper.eq(Students::getId,currentId);
-        Students student = studentsService.getOne(lambdaQueryWrapper);
-        //信息拷贝
-        UsedCarMarket usedCarMarket = BeanUtil.copyProperties(usedCarMarketPublishDto, UsedCarMarket.class);
-        //设置学生信息
-        usedCarMarket.setNumber(student.getStudentNumber());
-        usedCarMarket.setSchoolName(student.getSchoolName());
-        //保存
-        usedCarMarketService.save(usedCarMarket);
+        log.info("当前操作人：{}, 发布二手交易信息：{}", currentId, usedCarMarketPublishDto);
+        // 新增发布信息
+        usedCarMarketService.addUsedCarMarket(usedCarMarketPublishDto, currentId);
 
         return Result.success("发布成功");
     }
