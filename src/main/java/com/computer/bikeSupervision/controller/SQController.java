@@ -33,7 +33,7 @@ public class SQController {
     @Autowired
     private QRCodeGenerator qrCodeGenerator;
 
-    @ApiOperation(value = "二维码生成", notes = "无需传递参数")
+    @ApiOperation(value = "二维码生成", notes = "需要传递一个特定的车牌号")
     @PostMapping("/generateSqCode")
     public Result<String> generateSqCode() throws Exception {
         //获取当前登陆人的id
