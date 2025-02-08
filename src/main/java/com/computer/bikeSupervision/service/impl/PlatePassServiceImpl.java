@@ -52,14 +52,14 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
                 eq(PlatePass::getStudentNumber, studentNumber);
 
         //查询 该学生 是否拥有 车牌或者通行证
-        //TODO 查询逻辑问题 无法处理一个学生对应多个车牌和通行证的情况
-        PlatePass one = this.getOne(lambdaQueryWrapper);
+        //TODO 查询逻辑问题 无法处理一个学生对应多个车牌和通行证的情况 -> 解决方案 前端给定一个所需要查询的车牌号二维码信息
+        PlatePass platePass = this.getOne(lambdaQueryWrapper);
 
         StudentSQVo studentSQVo = new StudentSQVo();
         studentSQVo.setStudentName(studentName);
         // 第一个参数是原始数据 第二参数 为 拷贝的对象目标
 
-        BeanUtils.copyProperties(one, studentSQVo);
+        BeanUtils.copyProperties(platePass, studentSQVo);
 
         log.info("拷贝好的属性：{}", studentSQVo);
         // 将实体类转换成json格式的数据 用于生成二维码
@@ -71,9 +71,9 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
         String url = aliOSSUtils.upload(image);
 
         // 将url保存到学生的二维码云端路径字段当中
-        one.setQrCode(url);
+        platePass.setQrCode(url);
         // 更新学生信息
-        this.updateById(one);
+        this.updateById(platePass);
         // 返回url路径
         return url;
     }
