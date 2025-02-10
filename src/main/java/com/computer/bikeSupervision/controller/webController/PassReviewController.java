@@ -87,7 +87,7 @@ public class PassReviewController {
         lambdaQueryWrapper.eq(Administrator::getId, currentId);
 
         Administrator administrator = administratorService.getOne(lambdaQueryWrapper);
-        //权限校验
+        //管理员权限校验
         if (administrator.getStatus().equals("0")) {
             // 0是未审核 1是已通过 2是未通过
             // 未通过的话 还会传过来一个原因

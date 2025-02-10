@@ -16,6 +16,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Random;
 
@@ -76,12 +77,10 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         platePass.setPassNumber(passNumber);
 
         // TODO 还差一个调用图片工具类 -> 生成特定的通行证图片
-        /*
         MultipartFile multipartFile = imageProcessorUtils.generatePassImage(passReview.getPlateNumber(), passNumber);
         // 调用图片上传工具类
         String uploadUrl = aliOSSUtils.upload(multipartFile);
         platePass.setPassImage(uploadUrl);
-        */
 
         // 保存到数据库
         platePassService.save(platePass);

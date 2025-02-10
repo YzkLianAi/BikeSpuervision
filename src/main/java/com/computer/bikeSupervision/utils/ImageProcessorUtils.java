@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Component
 public class ImageProcessorUtils {
-    private static final String TEMPLATE_IMAGE_PATH = "path/to/your/template.png";
+    private static final String TEMPLATE_IMAGE_PATH = "F:\\Image\\机设\\通行证模板.png";
 
     public MultipartFile generatePassImage(String licensePlate, String passNumber) throws IOException {
         // 读取本地图片模板
@@ -27,8 +27,8 @@ public class ImageProcessorUtils {
         g2d.setColor(Color.BLACK);
 
         // 在图片的固定位置添加车牌号和通行证号
-        g2d.drawString("车牌号: " + licensePlate, 50, 50);
-        g2d.drawString("通行证号: " + passNumber, 50, 100);
+        g2d.drawString(licensePlate, 350, 210);
+        g2d.drawString(passNumber, 159, 210);
 
         g2d.dispose();
 
