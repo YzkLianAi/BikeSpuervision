@@ -90,4 +90,29 @@ public class QRCodeGenerator {
 
         return result.getText();
     }
+
+    /**
+     * 解析 BufferedImage 中的二维码
+     * @param bufferedImage
+     * @return
+     * @throws NotFoundException
+     * @throws FormatException
+     * @throws ChecksumException
+     */
+    public String parseQRCodeFromBufferedImage(BufferedImage bufferedImage) throws NotFoundException, FormatException, ChecksumException {
+        // 创建二维码读取器
+        QRCodeReader qrCodeReader = new QRCodeReader();
+
+        // 将BufferedImage转换为可被读取器识别的格式
+        BufferedImageLuminanceSource luminanceSource = new BufferedImageLuminanceSource(bufferedImage);
+
+        HybridBinarizer binarization = new HybridBinarizer(luminanceSource);
+
+        BinaryBitmap binaryBitmap = new BinaryBitmap(binarization);
+
+        // 读取二维码内容
+        Result result = qrCodeReader.decode(binaryBitmap);
+
+        return result.getText();
+    }
 }

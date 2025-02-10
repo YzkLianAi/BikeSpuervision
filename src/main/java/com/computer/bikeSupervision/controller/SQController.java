@@ -2,21 +2,24 @@ package com.computer.bikeSupervision.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.computer.bikeSupervision.common.BaseContext;
+import com.computer.bikeSupervision.common.CustomException;
 import com.computer.bikeSupervision.common.Result;
-import com.computer.bikeSupervision.pojo.vo.StudentSQVo;
+import com.computer.bikeSupervision.pojo.entity.PlatePass;
+import com.computer.bikeSupervision.pojo.vo.PlatePassSQVo;
 import com.computer.bikeSupervision.service.PlatePassService;
 import com.computer.bikeSupervision.service.StudentsService;
+import com.computer.bikeSupervision.utils.CameraUtils;
 import com.computer.bikeSupervision.utils.QRCodeGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.awt.image.BufferedImage;
 
 @Slf4j
 @RestController
@@ -33,6 +36,9 @@ public class SQController {
     @Autowired
     private QRCodeGenerator qrCodeGenerator;
 
+    @Autowired
+    CameraUtils cameraUtils;
+
     @ApiOperation(value = "二维码生成", notes = "需要传递一个特定的车牌号")
     @PostMapping("/generateSqCode")
     public Result<String> generateSqCode() throws Exception {
@@ -48,13 +54,66 @@ public class SQController {
 
     @ApiOperation(value = "二维码解析", notes = "需要传递一个MultipartFile 类型的文件")
     @PostMapping("/parseSqCode")
-    public Result<StudentSQVo> parseSqCode(MultipartFile image) throws Exception {
+    public Result<String> parseSqCode(MultipartFile image) throws Exception {
         //解析二维码
         String content = qrCodeGenerator.parseQRCodeData(image);
         log.info("解析成功，解析的内容为：{}", content);
 
-        StudentSQVo studentSQVo = JSONObject.parseObject(content, StudentSQVo.class);
+        PlatePassSQVo platePassSQVo = JSONObject.parseObject(content, PlatePassSQVo.class);
+        // 与数据库比对
+        boolean isMatch = compareWithDatabase(platePassSQVo);
+        if (isMatch) {
+            return Result.success("二维码内容匹配成功");
+        } else {
+            return Result.error("二维码内容匹配失败");
+        }
+
         //将解析的json格式的数据再转换成实体类 返回给前端做展示 在 @RestController下会自动将实体类封装成json
-        return Result.success(studentSQVo);
+        //return Result.success(platePassSQVo);
+    }
+
+    @ApiOperation(value = "摄像头捕获二维码解析", notes = "需要传递一个MultipartFile 类型的文件")
+    @PostMapping("/scanQrCode")
+    public Result<String> scanQrCode() {
+        try {
+            // 从摄像头捕获图像
+            BufferedImage image = cameraUtils.captureImageFromCamera();
+            // 调用新增的解析方法解析图像中的二维码内容
+            String qrCodeContent = qrCodeGenerator.parseQRCodeFromBufferedImage(image);
+            // 解析 JSON 数据
+            PlatePassSQVo platePass = JSONObject.parseObject(qrCodeContent, PlatePassSQVo.class);
+
+            // 与数据库比对
+            boolean isMatch = compareWithDatabase(platePass);
+            if (isMatch) {
+                return Result.success("二维码内容匹配成功");
+            } else {
+                return Result.error("二维码内容匹配失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CustomException("二维码扫描失败");
+        }
+    }
+
+    /**
+     * 与数据库比对
+     */
+    private boolean compareWithDatabase(PlatePassSQVo platePass) {
+
+        String studentNumber = platePass.getStudentNumber();
+        String plateNumber = platePass.getPlateNumber();
+        String passNumber = platePass.getPassNumber();
+
+        LambdaQueryWrapper<PlatePass> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(PlatePass::getStudentNumber, studentNumber)
+                .eq(PlatePass::getPlateNumber, plateNumber)
+                .eq(PlatePass::getPassNumber, passNumber);
+        // 根据 studentNumber、plateNumber 和 passNumber 查询 plate_pass 表
+        PlatePass platePassOne = platePassService.getOne(lambdaQueryWrapper);
+
+
+        return platePassOne != null;
     }
 }
+
