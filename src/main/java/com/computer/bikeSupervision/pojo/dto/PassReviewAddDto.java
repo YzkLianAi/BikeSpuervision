@@ -3,6 +3,9 @@ package com.computer.bikeSupervision.pojo.dto;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
+/**
+ * 通行证添加
+ */
 @Data
 public class PassReviewAddDto {
     /**

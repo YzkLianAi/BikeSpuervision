@@ -2,6 +2,9 @@ package com.computer.bikeSupervision.pojo.dto;
 
 import lombok.Data;
 
+/**
+ * 新增违章信息
+ */
 @Data
 public class ViolationAddDto {
     /**

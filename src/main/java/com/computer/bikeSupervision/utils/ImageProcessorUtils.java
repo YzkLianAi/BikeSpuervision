@@ -41,13 +41,6 @@ public class ImageProcessorUtils {
         String fileName = UUID.randomUUID() + ".png";
 
         // 创建一个基于字节数组的 FileItem
-
-        /*
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        DiskFileItem fileItem = (DiskFileItem) factory.createItem("passImage", "image/png", false, fileName);
-        fileItem.getOutputStream().write(imageBytes);
-        */
-
         FileItem fileItem = new DiskFileItem(fileName, "image/png", false, fileName, imageBytes.length, null);
         fileItem.getOutputStream().write(imageBytes);
 
