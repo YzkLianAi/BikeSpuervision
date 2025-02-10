@@ -23,11 +23,18 @@ public class ImageProcessorUtils {
         BufferedImage templateImage = ImageIO.read(new File(TEMPLATE_IMAGE_PATH));
 
         Graphics2D g2d = templateImage.createGraphics();
-        g2d.setFont(new Font("Arial", Font.BOLD, 20));
+
+        // 开启抗锯齿功能，使字体边缘更平滑
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        // 开启字体渲染的分数度量，提高字体渲染质量
+        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        // 使用支持中文的字体，例如宋体
+        Font font = new Font("宋体", Font.BOLD, 20);
+        g2d.setFont(font);
         g2d.setColor(Color.BLACK);
 
         // 在图片的固定位置添加车牌号和通行证号
-        g2d.drawString(licensePlate, 350, 210);
+        g2d.drawString(licensePlate, 345, 210);
         g2d.drawString(passNumber, 159, 210);
 
         g2d.dispose();
