@@ -118,12 +118,12 @@ public class VehicleTransferServiceImpl extends ServiceImpl<VehicleTransferMappe
         String sellerNumber = vehicleTransfer.getSellerNumber();
 
         // 查询卖方拥有车辆数量和是否有违法记录
-        List<PlatePass> sellerList = platePassService.getPlatePassByStudentNumberAndSchoolName(purchaserNumber, schoolName);
+        List<PlatePass> sellerList = platePassService.getPlatePassByStudentNumberAndSchoolName(sellerNumber, schoolName);
         int sellerVehicleCount = sellerList.size();
         boolean sellerHasViolation = violationService.hasViolation(sellerNumber, schoolName);
 
         // 查询买方拥有车辆数量和是否有违法记录
-        List<PlatePass> buyerList = platePassService.getPlatePassByStudentNumberAndSchoolName(sellerNumber, schoolName);
+        List<PlatePass> buyerList = platePassService.getPlatePassByStudentNumberAndSchoolName(purchaserNumber, schoolName);
         int buyerVehicleCount = buyerList.size();
         boolean buyerHasViolation = violationService.hasViolation(purchaserNumber, schoolName);
 
