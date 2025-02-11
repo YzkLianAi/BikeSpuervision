@@ -7,6 +7,7 @@ import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 @Component //交给IOC容器管理 用于后续配置了当中的bean注入
 public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
         //1.获取请求url
         String url = request.getRequestURL().toString();
         log.info("请求的url：{}", url);
