@@ -173,6 +173,27 @@
             <artifactId>qiniu-java-sdk</artifactId>
             <version>7.12.0</version>
         </dependency>
+
+        <!-- JavaCV core -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+
+        <!-- OpenCV platform-specific dependencies -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>opencv-platform</artifactId>
+            <version>4.5.3-1.5.6</version>
+        </dependency>
+
+        <!-- FFmpeg platform-specific dependencies -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg-platform</artifactId>
+            <version>4.4-1.5.6</version>
+        </dependency>
     </dependencies>
 
     <build>

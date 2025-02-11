@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class CameraUtils {
@@ -27,6 +29,7 @@ public class CameraUtils {
 
             BufferedImage convert = converter.convert(frame);
 
+            // 将捕获到的图片 上传到云端  用于查看
             /*// 将BufferedImage转换为字节数组
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(convert, "png", baos);
@@ -51,6 +54,37 @@ public class CameraUtils {
             } catch (FrameGrabber.Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    /**
+     * 枚举所有可用的摄像头设备
+     * @return
+     */
+    public static List<Integer> enumerateCameras() {
+        List<Integer> availableCameras = new ArrayList<>();
+        int index = 0;
+        while (true) {
+            try {
+                OpenCVFrameGrabber grabber = new OpenCVFrameGrabber(index);
+                grabber.start();
+                grabber.stop();
+                availableCameras.add(index);
+                index++;
+            } catch (Exception e) {
+                // 当无法打开摄像头时，说明该索引对应的摄像头不存在
+                break;
+            }
+        }
+        return availableCameras;
+    }
+
+
+    public static void main(String[] args) {
+        List<Integer> cameras = enumerateCameras();
+        System.out.println("可用摄像头设备索引：");
+        for (int cameraIndex : cameras) {
+            System.out.println(cameraIndex);
         }
     }
 }
