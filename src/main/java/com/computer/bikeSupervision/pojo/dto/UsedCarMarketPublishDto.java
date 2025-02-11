@@ -21,6 +21,18 @@ public class UsedCarMarketPublishDto {
     private String wechatNumber;
 
     /**
+     * 车牌号
+     */
+    @TableField(value = "plate_number")
+    private String plateNumber;
+
+    /**
+     * 出租时间（单位为月份）
+     */
+    @TableField(value = "rental_time")
+    private Integer rentalTime;
+
+    /**
      * 车辆图片
      */
     @TableField(value = "image")

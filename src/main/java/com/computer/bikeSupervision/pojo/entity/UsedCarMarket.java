@@ -46,6 +46,18 @@ public class UsedCarMarket implements Serializable {
     private String wechatNumber;
 
     /**
+     * 车牌号
+     */
+    @TableField(value = "plate_number")
+    private String plateNumber;
+
+    /**
+     * 出租时间（单位为月份）
+     */
+    @TableField(value = "rental_time")
+    private Integer rentalTime ;
+
+    /**
      * 车辆图片
      */
     @TableField(value = "image")
@@ -66,14 +78,14 @@ public class UsedCarMarket implements Serializable {
     /**
      * 出售状态（0表示未售，1表示已售）
      */
-    @TableField(value = "status")
-    private String status;
+    @TableField(value = "sell_status")
+    private String sellStatus;
 
     /**
      * 审核状态（0表示未审核，1表示通过，2表示未通过）
      */
-    @TableField(value = "check")
-    private String check;
+    @TableField(value = "check_status")
+    private String checkStatus;
 
     /**
      * 审核原因
