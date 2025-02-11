@@ -21,4 +21,10 @@ public interface PlatePassService extends IService<PlatePass> {
      * 学生查询自身通行证信息
      */
     List<StudentPlatePassVo> getStudentPass(Students student);
+
+
+    /**
+     * 查询学生所拥有车牌集合
+     */
+    List<PlatePass> getPlatePassByStudentNumberAndSchoolName(String studentNumber, String schoolName);
 }

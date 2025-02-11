@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.computer.bikeSupervision.mapper.ViolationMapper;
 import com.computer.bikeSupervision.pojo.entity.Administrator;
 import com.computer.bikeSupervision.pojo.entity.PageBean;
+import com.computer.bikeSupervision.pojo.entity.PlatePass;
 import com.computer.bikeSupervision.pojo.entity.Violation;
 import com.computer.bikeSupervision.service.AdministratorService;
+import com.computer.bikeSupervision.service.PlatePassService;
 import com.computer.bikeSupervision.service.ViolationService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -14,11 +16,16 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation> implements ViolationService {
     @Autowired
-    AdministratorService administratorService;
+    private AdministratorService administratorService;
+
+    @Autowired
+    private PlatePassService platePassService;
 
 
     @Override
@@ -55,6 +62,7 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
 
     /**
      * 处理进度查询
+     *
      * @param pageNum
      * @param pageSize
      * @param currentId
@@ -82,6 +90,27 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
 
         return new PageBean(p.getTotal(), p.getResult());
 
+    }
+
+    @Override
+    public boolean hasViolation(String studentNumber, String schoolName) {
+        // 根据学号和学校名称查询该学生的车牌信息
+        List<PlatePass> platePassList = platePassService.getPlatePassByStudentNumberAndSchoolName(studentNumber, schoolName);
+        // 遍历车牌信息列表
+        for (PlatePass platePass : platePassList) {
+            String plateNumber = platePass.getPlateNumber();
+            // 根据车牌号查询是否有未处理的违章记录
+            LambdaQueryWrapper<Violation> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(Violation::getLicencePlate, plateNumber)
+                    .eq(Violation::getDealStatus, "0");
+
+            if (this.count(queryWrapper) > 0) {
+                // 如果有未处理的违章记录，直接返回 true
+                return true;
+            }
+        }
+        // 如果遍历完所有车牌都没有未处理的违章记录，返回 false
+        return false;
     }
 }
 

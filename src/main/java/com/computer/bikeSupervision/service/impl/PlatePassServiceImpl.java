@@ -114,6 +114,20 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
         return studentPlatePassVos;
 
     }
+
+    /**
+     * 查询学生所拥有车牌集合
+     * @param studentNumber
+     * @param schoolName
+     * @return
+     */
+    @Override
+    public List<PlatePass> getPlatePassByStudentNumberAndSchoolName(String studentNumber, String schoolName) {
+        LambdaQueryWrapper<PlatePass> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(PlatePass::getSchoolName, schoolName)
+                .eq(PlatePass::getStudentNumber, studentNumber);
+        return this.list(lambdaQueryWrapper);
+    }
 }
 
 
