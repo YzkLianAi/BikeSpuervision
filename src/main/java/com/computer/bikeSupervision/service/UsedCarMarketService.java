@@ -13,15 +13,16 @@ public interface UsedCarMarketService extends IService<UsedCarMarket> {
 
     /**
      * 发布二手车信息
-     * @param usedCarMarketPublishDto
-     * @param currentId
      */
     void addUsedCarMarket(UsedCarMarketPublishDto usedCarMarketPublishDto, Long currentId);
 
     /**
      * 查询二手车信息
-     * @param currentId
-     * @return
      */
     List<UsedCarMarket> queryUsedCarMarket(Long currentId);
+
+    /**
+     * 查询卖方已发布的车辆信息
+     */
+    List<UsedCarMarket> querySellerUsedCarMarket(Long currentId);
 }

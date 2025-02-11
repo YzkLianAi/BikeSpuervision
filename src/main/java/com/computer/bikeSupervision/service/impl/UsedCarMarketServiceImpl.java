@@ -81,6 +81,23 @@ public class UsedCarMarketServiceImpl extends ServiceImpl<UsedCarMarketMapper, U
 
         return this.list(usedCarMarketLambdaQueryWrapper);
     }
+
+    @Override
+    public List<UsedCarMarket> querySellerUsedCarMarket(Long currentId) {
+        LambdaQueryWrapper<Students> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        //根据当前登陆人 id 查询学生信息
+        lambdaQueryWrapper.eq(Students::getId, currentId);
+
+        //获取学校信息
+        Students student = studentsService.getOne(lambdaQueryWrapper);
+
+        LambdaQueryWrapper<UsedCarMarket> usedCarMarketLambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+        usedCarMarketLambdaQueryWrapper.eq(UsedCarMarket::getNumber, student.getStudentNumber())
+                .eq(UsedCarMarket::getSchoolName, student.getSchoolName());
+
+        return this.list(usedCarMarketLambdaQueryWrapper);
+    }
 }
 
 
