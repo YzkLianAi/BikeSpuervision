@@ -70,7 +70,7 @@ public class ViolationController {
         lambdaQueryWrapper.eq(Administrator::getId, currentId);
 
         Administrator administrator = administratorService.getOne(lambdaQueryWrapper);
-        //权限校验
+        //管理员权限校验
         if (administrator.getStatus().equals("0")){
 
             //violation.setCheckStatus("1");
