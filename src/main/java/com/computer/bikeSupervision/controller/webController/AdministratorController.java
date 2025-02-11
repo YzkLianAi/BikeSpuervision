@@ -28,12 +28,13 @@ public class AdministratorController {
     @ApiOperation(value = "管理员登录接口")
     @PostMapping("/login")
     public Result<String> login(@ApiParam("管理员登录Dto") @RequestBody AdministratorLoginDto administratorLoginDto) {
-        //获取当前学生的学号
+        //获取当前管理员账号
         String adminNumber = administratorLoginDto.getAdminNumber();
         //获取经过md5加密后的密码
         String md5Password = DigestUtils.md5DigestAsHex(administratorLoginDto.getPassword().getBytes());
         // 将密码加密后存入dto
         administratorLoginDto.setPassword(md5Password);
+
         log.info("登录的学生学号:{},密码:{},学校:{}", adminNumber, md5Password, administratorLoginDto.getSchoolName());
 
         String token = administratorService.login(administratorLoginDto);
