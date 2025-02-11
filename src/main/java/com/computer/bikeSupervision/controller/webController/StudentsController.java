@@ -8,6 +8,8 @@ import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
 import com.computer.bikeSupervision.pojo.dto.StudentRegisterDto;
 import com.computer.bikeSupervision.pojo.entity.PageBean;
 import com.computer.bikeSupervision.pojo.entity.Students;
+import com.computer.bikeSupervision.pojo.vo.StudentPlatePassVo;
+import com.computer.bikeSupervision.service.PlatePassService;
 import com.computer.bikeSupervision.service.StudentsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @Api(tags = "学生信息管理")
@@ -25,6 +29,9 @@ import org.springframework.web.bind.annotation.*;
 public class StudentsController {
     @Autowired
     StudentsService studentsService;
+
+    @Autowired
+    PlatePassService platePassService;
 
     @ApiOperation(value = "学生登录接口", notes = "需要转递学号studentNumber和密码password")
     @PostMapping("/login")
@@ -94,6 +101,20 @@ public class StudentsController {
         PageBean pageInfo = studentsService.getStudentsPage(page, pageSize, name, currentId);
 
         return Result.success(pageInfo);
+    }
+
+    //TODO 学生查询自己所拥有的通行证信息
+    @ApiOperation(value = "学生查询自己所拥有的通行证信息")
+    @GetMapping("/getStudentPass")
+    public Result<List<StudentPlatePassVo>> getStudentPass() {
+        //根据当前线程获取id
+        Long currentId = BaseContext.getCurrentId();
+        //获取匹配的学生信息
+        Students student = studentsService.getById(currentId);
+
+        List<StudentPlatePassVo> platePassList = platePassService.getStudentPass(student);
+
+        return Result.success(platePassList);
     }
 
 }

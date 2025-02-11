@@ -8,6 +8,7 @@ import com.computer.bikeSupervision.mapper.StudentsMapper;
 import com.computer.bikeSupervision.pojo.entity.PlatePass;
 import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.pojo.vo.PlatePassSQVo;
+import com.computer.bikeSupervision.pojo.vo.StudentPlatePassVo;
 import com.computer.bikeSupervision.service.PlatePassService;
 import com.computer.bikeSupervision.utils.AliOSSUtils;
 import com.computer.bikeSupervision.utils.QRCodeGenerator;
@@ -17,6 +18,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * 车牌通行证管理服务实现类
@@ -38,6 +42,9 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
     @Autowired
     private AliOSSUtils aliOSSUtils;
 
+    /**
+     * 生成二维码
+     */
     public String generateSqCode(Long id) throws Exception {
         // 根据id查询当前人的信息
         Students student = studentsMapper.selectById(id);
@@ -76,6 +83,36 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
         this.updateById(platePass);
         // 返回url路径
         return url;
+    }
+
+    /**
+     * 学生查询自身通行证信息
+     */
+    @Override
+    public List<StudentPlatePassVo> getStudentPass(Students student) {
+        //通过当前学生的 学号 和 学校名称 去 PlatePass表中查询信息
+
+        String studentNumber = student.getStudentNumber();
+        String schoolName = student.getSchoolName();
+        //创建条件构造器
+        LambdaQueryWrapper<PlatePass> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        //添加查询条件
+        lambdaQueryWrapper.eq(PlatePass::getStudentNumber, studentNumber)
+                .eq(PlatePass::getSchoolName, schoolName);
+
+        List<PlatePass> list = this.list(lambdaQueryWrapper);
+        //将查询到的数据拷贝到StudentPlatePassVo中
+
+        List<StudentPlatePassVo> studentPlatePassVos = new ArrayList<>();
+
+        for (PlatePass platePass : list) {
+            StudentPlatePassVo studentPlatePassVo = new StudentPlatePassVo();
+            BeanUtils.copyProperties(platePass, studentPlatePassVo);
+            studentPlatePassVos.add(studentPlatePassVo);
+        }
+
+        return studentPlatePassVos;
+
     }
 }
 

@@ -2,6 +2,10 @@ package com.computer.bikeSupervision.service;
 
 import com.computer.bikeSupervision.pojo.entity.PlatePass;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.computer.bikeSupervision.pojo.entity.Students;
+import com.computer.bikeSupervision.pojo.vo.StudentPlatePassVo;
+
+import java.util.List;
 
 
 public interface PlatePassService extends IService<PlatePass> {
@@ -12,4 +16,9 @@ public interface PlatePassService extends IService<PlatePass> {
      * @return
      */
     String generateSqCode(Long id) throws Exception;
+
+    /**
+     * 学生查询自身通行证信息
+     */
+    List<StudentPlatePassVo> getStudentPass(Students student);
 }

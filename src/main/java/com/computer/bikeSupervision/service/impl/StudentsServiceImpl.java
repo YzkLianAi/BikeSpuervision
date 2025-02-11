@@ -124,6 +124,10 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
         PageHelper.startPage(page, pageSize);//设置分页参数
 
         Administrator administrator = administratorService.getById(currentId);
+        if (administrator == null) {
+            throw new CustomException("非管理员账户");
+        }
+
         String schoolName = administrator.getSchoolName();
 
         //构造条件构造器
