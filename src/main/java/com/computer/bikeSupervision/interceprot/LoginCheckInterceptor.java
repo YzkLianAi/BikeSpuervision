@@ -34,12 +34,13 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         } catch (Exception e) {
             e.printStackTrace();
             log.info("未携带token");
-            Result<String> error = Result.error("NOT_LOGIN");
+            Result<String> error = Result.error("未携带token");
             //手动转换 将对象 -> json ——————>利用阿里巴巴fastJson工具类
             String notLogin = JSONObject.toJSONString(error);
             response.getWriter().write(notLogin);//将错误信息返回给前端
             return false;
         }
+
         //如果上面能走通则说明能获取到token 下面就是解析token是否正确
         String[] split = newJwt.split(" ");
         String jwt = split[1];
@@ -61,7 +62,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         } catch (Exception exception) {
             exception.printStackTrace();
             log.info("解析令牌失败，返回未登录错误信息");
-            Result<String> error = Result.error("NOT_LOGIN");
+            Result<String> error = Result.error("令牌解析失败");
             //手动转换 将对象 -> json ——————>利用阿里巴巴fastJson工具类
             String notLogin = JSONObject.toJSONString(error);
             response.getWriter().write(notLogin);//将错误信息返回给前端
