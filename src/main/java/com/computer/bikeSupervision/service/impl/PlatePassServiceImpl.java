@@ -45,7 +45,7 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
     /**
      * 生成二维码
      */
-    public String generateSqCode(Long id) throws Exception {
+    public String generateSqCode(Long id, String plateNumber) throws Exception {
         // 根据id查询当前人的信息
         Students student = studentsMapper.selectById(id);
 
@@ -54,16 +54,17 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
         String studentNumber = student.getStudentNumber();
 
         LambdaQueryWrapper<PlatePass> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(PlatePass::getSchoolName, schoolName).
-                eq(PlatePass::getStudentNumber, studentNumber);
+        lambdaQueryWrapper.eq(PlatePass::getSchoolName, schoolName)
+                .eq(PlatePass::getStudentNumber, studentNumber)
+                .eq(PlatePass::getPlateNumber, plateNumber);
 
         //查询 该学生 是否拥有 车牌或者通行证
-        //TODO 查询逻辑问题 无法处理一个学生对应多个车牌和通行证的情况 -> 解决方案 前端给定一个所需要查询的车牌号二维码信息
         PlatePass platePass = this.getOne(lambdaQueryWrapper);
+        if (platePass == null) {
+            throw new Exception("车辆信息错误");
+        }
 
-        //StudentSQVo studentSQVo = new StudentSQVo();
         PlatePassSQVo platePassSQVo = new PlatePassSQVo();
-        //studentSQVo.setStudentName(studentName);
 
         // 第一个参数是原始数据 第二参数 为 拷贝的对象目标
         BeanUtils.copyProperties(platePass, platePassSQVo);
@@ -117,6 +118,7 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
 
     /**
      * 查询学生所拥有车牌集合
+     *
      * @param studentNumber
      * @param schoolName
      * @return

@@ -41,11 +41,11 @@ public class SQController {
 
     @ApiOperation(value = "二维码生成", notes = "需要传递一个特定的车牌号")
     @PostMapping("/generateSqCode")
-    public Result<String> generateSqCode() throws Exception {
+    public Result<String> generateSqCode(String plateNumber) throws Exception {
         //获取当前登陆人的id
         Long id = BaseContext.getCurrentId();
         //生成二维码 获取云端存储的url路径并返回给前端
-        String url = platePassService.generateSqCode(id);
+        String url = platePassService.generateSqCode(id,plateNumber);
 
         log.info("上传成功，url为：{}", url);
         return Result.success(url);
@@ -67,9 +67,6 @@ public class SQController {
         } else {
             return Result.error("二维码内容匹配失败");
         }
-
-        //将解析的json格式的数据再转换成实体类 返回给前端做展示 在 @RestController下会自动将实体类封装成json
-        //return Result.success(platePassSQVo);
     }
 
     @ApiOperation(value = "摄像头捕获二维码解析", notes = "需要传递一个MultipartFile 类型的文件")
@@ -96,6 +93,22 @@ public class SQController {
         }
     }
 
+    @ApiOperation(value = "接受并比对前端识别出来的二维码信息")
+    @PostMapping("/compareWithDatabase")
+    public Result<String> compareWithDatabase(String qrCodeContent) {
+        // 解析 JSON 数据
+        PlatePassSQVo platePass = JSONObject.parseObject(qrCodeContent, PlatePassSQVo.class);
+
+        // 与数据库比对
+        boolean isMatch = compareWithDatabase(platePass);
+        if (isMatch) {
+            return Result.success("二维码内容匹配成功");
+        } else {
+            return Result.error("二维码内容匹配失败");
+        }
+    }
+
+
     /**
      * 与数据库比对
      */
@@ -111,7 +124,6 @@ public class SQController {
                 .eq(PlatePass::getPassNumber, passNumber);
         // 根据 studentNumber、plateNumber 和 passNumber 查询 plate_pass 表
         PlatePass platePassOne = platePassService.getOne(lambdaQueryWrapper);
-
 
         return platePassOne != null;
     }
