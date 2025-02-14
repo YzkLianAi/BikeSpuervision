@@ -98,13 +98,17 @@ public class SQController {
     public Result<String> compareWithDatabase(String qrCodeContent) {
         // 解析 JSON 数据
         PlatePassSQVo platePass = JSONObject.parseObject(qrCodeContent, PlatePassSQVo.class);
+        if (platePass == null) {
+            throw new CustomException("二维码内容解析失败");
+        }
 
+        log.info("解析的二维码内容为：{}", platePass);
         // 与数据库比对
         boolean isMatch = compareWithDatabase(platePass);
         if (isMatch) {
-            return Result.success("二维码内容匹配成功");
+            return Result.success("通过");
         } else {
-            return Result.error("二维码内容匹配失败");
+            return Result.error("不通过");
         }
     }
 
