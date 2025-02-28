@@ -64,6 +64,12 @@ public class Administrator implements Serializable {
     private String status;
 
     /**
+     * 权限
+     */
+    @TableField(value = "dept")
+    private String dept;
+
+    /**
      * 创建时间
      */
     @TableField(value = "create_time", fill = FieldFill.INSERT)

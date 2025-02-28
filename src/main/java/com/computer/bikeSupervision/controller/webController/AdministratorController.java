@@ -35,7 +35,7 @@ public class AdministratorController {
         // 将密码加密后存入dto
         administratorLoginDto.setPassword(md5Password);
 
-        log.info("登录的学生学号:{},密码:{},学校:{}", adminNumber, md5Password, administratorLoginDto.getSchoolName());
+        log.info("登录的管理员账号:{},密码:{},学校:{}", adminNumber, md5Password, administratorLoginDto.getSchoolName());
 
         String token = administratorService.login(administratorLoginDto);
 

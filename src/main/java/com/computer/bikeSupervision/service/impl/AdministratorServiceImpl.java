@@ -22,14 +22,17 @@ import java.util.Map;
 public class AdministratorServiceImpl extends ServiceImpl<AdministratorMapper, Administrator>
         implements AdministratorService {
 
+    /**
+     *登录
+     */
     @Override
     public String login(AdministratorLoginDto administratorLoginDto) {
         // 创建条件构造器
         LambdaQueryWrapper<Administrator> queryWrapper = new LambdaQueryWrapper<>();
         // 比对 账号 密码 和 学校 是否对应
         queryWrapper.eq(Administrator::getAdminNumber, administratorLoginDto.getAdminNumber())
-                .eq(Administrator::getPassword, administratorLoginDto.getPassword())
-                .eq(Administrator::getSchoolName, administratorLoginDto.getSchoolName());
+                .eq(Administrator::getPassword, administratorLoginDto.getPassword());
+                //.eq(Administrator::getSchoolName, administratorLoginDto.getSchoolName());
 
         Administrator administrator = this.getOne(queryWrapper);
         if (administrator != null) {
@@ -56,15 +59,17 @@ public class AdministratorServiceImpl extends ServiceImpl<AdministratorMapper, A
         BaseContext.setCurrentId(administrator.getId());
         //自己是自己的创建人
         administrator.setCreateUser(administrator.getId());
+
         log.info("新注册的学生信息:{}", administrator);
+
         //创建时间在新增的时候就已经提供了 此处只会修改 修改时间 和 修改人
         this.updateById(administrator);
     }
 
     @Override
     public void update(Administrator administrator) {
-        // 需要先比对密码是否经过修改 -> 如果密码是将 123456 重新加密后的结果 则说明密码没有经过修改不需要再经过md5加密
-        // 将其重新设置成 123456 经过md5加密后的结果
+        // 需要先比对密码是否经过修改 -> 如果密码是将 admin123 重新加密后的结果 则说明密码没有经过修改不需要再经过md5加密
+        // 将其重新设置成 admin123 经过md5加密后的结果
         if (administrator.getPassword().equals(DigestUtils.md5DigestAsHex("admin123".getBytes()))) {
             administrator.setPassword(DigestUtils.md5DigestAsHex("admin123".getBytes()));
         } else {
