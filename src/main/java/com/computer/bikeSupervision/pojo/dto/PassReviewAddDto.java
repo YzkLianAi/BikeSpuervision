@@ -15,14 +15,57 @@ public class PassReviewAddDto {
     private String plateNumber;
 
     /**
-     * 学生证/教工证图片
+     * 证明材料
      */
-    @TableField(value = "id_card")
-    private String idCard;
+    @TableField(value = "material")
+    private String material;
 
     /**
-     * 交管证明图片
+     * 车辆品牌
      */
-    @TableField(value = "traffic_card")
-    private String trafficCard;
+    @TableField(value = "vehicle_brand")
+    private String vehicleBrand;
+
+    /**
+     * 电池类型
+     */
+    @TableField(value = "battery_type")
+    private String batteryType;
+
+    /**
+     * 功率
+     */
+    @TableField(value = "power")
+    private String power;
+
+    /**
+     * 电压
+     */
+    @TableField(value = "voltage")
+    private String voltage;
+
+    /**
+     * 质量
+     */
+    @TableField(value = "quality")
+    private String quality;
+
+    /**
+     * 续航
+     */
+    @TableField(value = "endurance")
+    private String endurance;
+
+    /**
+     * 车牌类型
+     */
+    @TableField(value = "plate_type")
+    private String plateType;
+
+    /**
+     * 预估价值
+     */
+    @TableField(value = "price")
+    private String price;
+
 }

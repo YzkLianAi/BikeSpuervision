@@ -54,7 +54,7 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         LambdaQueryWrapper<PassReview> passReviewLambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 比对学校信息 和 检查状态
         passReviewLambdaQueryWrapper.eq(PassReview::getSchoolName, schoolName)
-                .eq(PassReview::getStatus, 0);
+                .eq(PassReview::getStatus, "未处理");
 
         passReviewLambdaQueryWrapper.orderByDesc(PassReview::getUpdateTime);
 
@@ -64,6 +64,9 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         return new PageBean(p.getTotal(), p.getResult());
     }
 
+    /**
+     * 审核通过
+     */
     @Override
     public void passReviewAudit(PassReview passReview) throws Exception {
         // 生成通行证号
@@ -75,9 +78,11 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         platePass.setSchoolName(passReview.getSchoolName());
         platePass.setPlateNumber(passReview.getPlateNumber());
         platePass.setPassNumber(passNumber);
+        // 先生成 二维码 然后把二维码一起放到 模板当中
+        MultipartFile qrImage = platePassService.generateSqOneCode(passReview, passNumber);
 
         // TODO 还差一个调用图片工具类 -> 生成特定的通行证图片
-        MultipartFile multipartFile = imageProcessorUtils.generatePassImage(passReview.getPlateNumber(), passNumber);
+        MultipartFile multipartFile = imageProcessorUtils.generatePassImage(passReview.getPlateNumber(), passNumber, qrImage);
         // 调用图片上传工具类
         String uploadUrl = aliOSSUtils.upload(multipartFile);
         platePass.setPassImage(uploadUrl);

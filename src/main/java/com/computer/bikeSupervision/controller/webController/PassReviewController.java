@@ -88,10 +88,10 @@ public class PassReviewController {
 
         Administrator administrator = administratorService.getOne(lambdaQueryWrapper);
         //管理员权限校验
-        if (administrator.getStatus().equals("0")) {
+        if (administrator.getStatus().equals("科员")) {
             // 0是未审核 1是已通过 2是未通过
             // 未通过的话 还会传过来一个原因
-            if ("1".equals(passReview.getStatus())) {
+            if ("审核通过".equals(passReview.getStatus())) {
                 // 审核通过
                 passReviewService.passReviewAudit(passReview);
             }
