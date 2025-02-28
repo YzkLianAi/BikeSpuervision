@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -39,6 +40,11 @@ public class Students implements Serializable {
     @TableField(value = "password")
     private String password;
 
+    /**
+     * 分数
+     */
+    @TableField(value = "score")
+    private BigDecimal score;
 
     /**
      * 性别

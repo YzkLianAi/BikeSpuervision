@@ -39,6 +39,8 @@ public class Violation implements Serializable {
     @TableField(value = "cause")
     private String cause;
 
+
+
     /**
      * 所属学校
      */
@@ -56,6 +58,13 @@ public class Violation implements Serializable {
      */
     @TableField(value = "check_status")
     private String checkStatus;
+
+    /**
+     * 扣分
+     */
+    @TableField(value = "deduction_score")
+    private String deductionScore;
+
 
     /**
      * 处理状态(0表示未处理，1表示已处理)

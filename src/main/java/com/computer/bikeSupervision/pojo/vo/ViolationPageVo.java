@@ -31,6 +31,12 @@ public class ViolationPageVo {
     private String image;
 
     /**
+     * 学生姓名
+     */
+    @TableField(value = "student_name")
+    private String studentName;
+
+    /**
      * 违法原因（在想要不要存编号）
      */
     @TableField(value = "cause")
@@ -48,6 +54,12 @@ public class ViolationPageVo {
      */
     @TableField(value = "check_status")
     private String checkStatus;
+
+    /**
+     * 处理状态(0表示未处理，1表示已处理)
+     */
+    @TableField(value = "deal_status")
+    private String dealStatus;
 
     /**
      * 创建时间
