@@ -7,9 +7,12 @@ import com.aliyun.oss.common.auth.EnvironmentVariableCredentialsProvider;
 import com.aliyuncs.exceptions.ClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -59,6 +62,20 @@ public class AliOSSUtils {
         // 关闭ossClient
         ossClient.shutdown();
         return url;// 把上传到oss的路径返回
+    }
+
+    public Map<String, String> uploadTwoFile(
+            @RequestParam("image") MultipartFile imageFile,
+            @RequestParam("file") MultipartFile documentFile) throws Exception {
+
+        String imageUrl = upload(imageFile);
+        String documentUrl = upload(documentFile);
+
+        Map<String, String> urls = new HashMap<>();
+        urls.put("imageUrl", imageUrl);
+        urls.put("fileUrl", documentUrl);
+
+        return urls;
     }
 
 }

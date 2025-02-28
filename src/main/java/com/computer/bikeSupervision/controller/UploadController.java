@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 
 @Slf4j
 @RestController
@@ -31,5 +33,17 @@ public class UploadController {
         log.info("文件上传完成，文件访问路径url：{}", url);
 
         return Result.success(url);
+    }
+
+    @ApiOperation(value = "上传图片至云端接口", notes = "需要传递一个MultipartFile 类型的文件")
+    @PostMapping("/uploadTwoFile")
+    public Result<Map<String, String>> uploadTwoFile(MultipartFile image, MultipartFile file) throws Exception {
+        log.info("文件上传，文件名{}", image.getOriginalFilename());
+
+        //调用阿里云OSS工具类进行上传
+        Map<String, String> stringStringMap = aliOSSUtils.uploadTwoFile(image, file);
+        log.info("文件上传完成，文件访问路径url：{}", stringStringMap);
+
+        return Result.success(stringStringMap);
     }
 }

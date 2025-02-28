@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class JwtUtils {
 
-    private static final String signKey = "human"; //令牌加密方式
+    private static final String signKey = "bike"; //令牌加密方式
     private static final Long expire = 43200000L; //设置令牌时间
 
     /**

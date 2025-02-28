@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-//自定义原数据对象处理器（用来进行公共字段填充的，必须继承MetaObjectHandler这个接口，这都是基于mybatis-plus）
+//自定义原数据对象处理器（用来进行公共字段填充的，必须继承 MetaObjectHandler这个接口，这都是基于mybatis-plus）
 //这个注释代表让spring框架来管理它
 @Component
 @Slf4j
