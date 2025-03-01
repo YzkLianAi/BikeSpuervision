@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.computer.bikeSupervision.mapper.PlatePassMapper;
 import com.computer.bikeSupervision.mapper.StudentsMapper;
+import com.computer.bikeSupervision.pojo.entity.PassReview;
 import com.computer.bikeSupervision.pojo.entity.PlatePass;
 import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.pojo.vo.PlatePassSQVo;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /*
  * 车牌通行证管理服务实现类
@@ -92,7 +94,6 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
     @Override
     public List<StudentPlatePassVo> getStudentPass(Students student) {
         //通过当前学生的 学号 和 学校名称 去 PlatePass表中查询信息
-
         String studentNumber = student.getStudentNumber();
         String schoolName = student.getSchoolName();
         //创建条件构造器
@@ -129,6 +130,47 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
         lambdaQueryWrapper.eq(PlatePass::getSchoolName, schoolName)
                 .eq(PlatePass::getStudentNumber, studentNumber);
         return this.list(lambdaQueryWrapper);
+    }
+
+    /**
+     * 根据车牌号查询学生学号
+     */
+    @Override
+    public String getStudentNumberByLicencePlate(String licencePlate) {
+        LambdaQueryWrapper<PlatePass> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PlatePass::getPlateNumber, licencePlate);
+
+        PlatePass platePass = this.getOne(wrapper);
+
+        return platePass != null ? platePass.getStudentNumber() : null;
+    }
+
+    /**
+     * 生成通行证二维码
+     */
+    @Override
+    public MultipartFile generateSqOneCode(PassReview passReview, String passNumber) throws Exception {
+        PlatePassSQVo platePassSQVo = new PlatePassSQVo();
+        BeanUtils.copyProperties(passReview, platePassSQVo);
+        platePassSQVo.setPassNumber(passNumber);
+        String json = JSONObject.toJSONString(platePassSQVo);
+        return qrCodeGenerator.generateQRCodeAsMultipartFile(json);
+
+    }
+
+    /**
+     * 根据学生学号查询学生所拥有的车牌号列表
+     */
+    @Override
+    public List<String> getLicensePlatesByStudentNumber(String studentNumber) {
+        //根据 学生学号查询学生所拥有的车牌号列表
+        LambdaQueryWrapper<PlatePass> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PlatePass::getStudentNumber, studentNumber);
+        List<PlatePass> licensePlates = this.list(queryWrapper);
+        //提取车牌号
+        return licensePlates.stream()
+                .map(PlatePass::getPlateNumber)
+                .collect(Collectors.toList());
     }
 }
 

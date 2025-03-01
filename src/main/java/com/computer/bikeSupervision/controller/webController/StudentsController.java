@@ -8,18 +8,22 @@ import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
 import com.computer.bikeSupervision.pojo.dto.StudentRegisterDto;
 import com.computer.bikeSupervision.pojo.entity.PageBean;
 import com.computer.bikeSupervision.pojo.entity.Students;
+import com.computer.bikeSupervision.pojo.entity.Violation;
 import com.computer.bikeSupervision.pojo.vo.StudentPlatePassVo;
 import com.computer.bikeSupervision.service.PlatePassService;
 import com.computer.bikeSupervision.service.StudentsService;
+import com.computer.bikeSupervision.service.ViolationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -33,15 +37,21 @@ public class StudentsController {
     @Autowired
     PlatePassService platePassService;
 
-    @ApiOperation(value = "学生登录接口", notes = "需要转递学号studentNumber和密码password")
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private ViolationService violationService;
+
+    @ApiOperation(value = "学生登录接口", notes = "需要转递邮箱和密码password")
     @PostMapping("/login")
     public Result<String> login(@ApiParam("学生登录Dto") @RequestBody StudentLoginDto studentLoginDto) {
-        //获取当前学生的学号
-        String studentId = studentLoginDto.getStudentNumber();
+        //获取当前学生的邮箱
+        String studentId = studentLoginDto.getEmail();
         //获取经过md5加密后的密码
         String md5Password = DigestUtils.md5DigestAsHex(studentLoginDto.getPassword().getBytes());
         studentLoginDto.setPassword(md5Password);
-        log.info("登录的学生学号:{},密码:{},学校:{}", studentId, md5Password, studentLoginDto.getSchoolName());
+        log.info("登录的学生邮箱:{},密码:{}", studentId, md5Password);
 
         String token = studentsService.login(studentLoginDto);
 
@@ -68,10 +78,20 @@ public class StudentsController {
     @ApiOperation(value = "获取当前登录的学生信息")
     @GetMapping("/getStudentById")
     public Result<Students> getStudentById() {
-        //根据当前线程获取id
+        // 根据当前线程获取 id
         Long currentId = BaseContext.getCurrentId();
-        //获取匹配的学生信息
-        Students student = studentsService.getById(currentId);
+
+        // 先从 Redis 中获取学生信息
+        Students student = (Students) redisTemplate.opsForValue().get("student:" + currentId);
+
+        if (student == null) {
+            // 如果 Redis 中不存在，再从数据库中查询
+            student = studentsService.getById(currentId);
+            if (student != null) {
+                // 将查询到的学生信息缓存到 Redis 中，设置过期时间为 43200000L 毫秒（12 小时）
+                redisTemplate.opsForValue().set("student:" + student.getId(), student, 12, TimeUnit.HOURS);
+            }
+        }
 
         return Result.success(student);
     }
@@ -95,12 +115,27 @@ public class StudentsController {
         Long currentId = BaseContext.getCurrentId();
         log.info("当前操作人id:{}", currentId);
 
-
         log.info("page = {} , pageSize = {}, name = {}", page, pageSize, name);
 
         PageBean pageInfo = studentsService.getStudentsPage(page, pageSize, name, currentId);
 
         return Result.success(pageInfo);
+    }
+
+    @ApiOperation(value = "查询自己的违章记录")
+    @GetMapping("/getMyViolationRecords")
+    public Result<List<Violation>> getMyViolationRecords() {
+        // 根据当前线程获取 id
+        Long currentId = BaseContext.getCurrentId();
+
+        // 获取学生学号
+        String studentNumber = studentsService.getById(currentId).getStudentNumber();
+
+        // 通过学号查询学生拥有的车牌号列表
+        List<String> licensePlates = platePassService.getLicensePlatesByStudentNumber(studentNumber);
+        // 根据车牌号列表查询违章记录
+        List<Violation> violationRecords = violationService.getViolationsByLicensePlates(licensePlates);
+        return Result.success(violationRecords);
     }
 
     //TODO 学生查询自己所拥有的通行证信息

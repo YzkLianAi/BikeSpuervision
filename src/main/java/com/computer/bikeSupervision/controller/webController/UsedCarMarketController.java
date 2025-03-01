@@ -115,7 +115,7 @@ public class UsedCarMarketController {
             throw new CustomException("非管理员用户登录");
         }
         //管理员权限校验
-        if (administrator.getStatus().equals("0")) {
+        if (administrator.getStatus().equals("科员")) {
             usedCarMarketService.updateById(usedCarMarket);
             return Result.success("审核成功");
         }else{

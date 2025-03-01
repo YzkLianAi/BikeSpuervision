@@ -5,6 +5,8 @@ import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
 import com.computer.bikeSupervision.pojo.entity.PageBean;
 import com.computer.bikeSupervision.pojo.entity.Students;
 
+import java.math.BigDecimal;
+
 
 public interface StudentsService extends IService<Students> {
 
@@ -18,28 +20,31 @@ public interface StudentsService extends IService<Students> {
 
     /**
      * 登录
-     * @return
      */
     String login(StudentLoginDto studentLoginDto);
 
     /**
      * 分页查询学生信息
-     * @param page
-     * @param pageSize
-     * @param name
-     * @return
      */
     PageBean getStudentsPage(int page, int pageSize, String name,Long currentId);
 
     /**
      * 注册
-     * @param newStudent
      */
     void register(Students newStudent);
 
     /**
      * 修改学生信息
-     * @param students
      */
     void update(Students students);
+
+    /**
+     * 根据学号查询学生姓名
+     */
+    String getStudentNameByStudentNumber(String studentNumber);
+
+    /**
+     * 根据学号扣分
+     */
+    void updateStudentScore(String studentNumber, BigDecimal deductionScore);
 }

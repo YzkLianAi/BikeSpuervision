@@ -66,10 +66,10 @@ public class VehicleTransferServiceImpl extends ServiceImpl<VehicleTransferMappe
             throw new CustomException("非管理员用户登录");
         }
         //管理员权限校验
-        if (administrator.getStatus().equals("0")) {
+        if (administrator.getStatus().equals("科员")) {
             LambdaQueryWrapper<VehicleTransfer> wrapper = new LambdaQueryWrapper<>();
             //比对审核状态 和 学校名称
-            wrapper.eq(VehicleTransfer::getStatus, "0")
+            wrapper.eq(VehicleTransfer::getStatus, "未处理")
                     .eq(VehicleTransfer::getSchoolName, administrator.getSchoolName());
             return this.list(wrapper);
         } else {
@@ -92,7 +92,7 @@ public class VehicleTransferServiceImpl extends ServiceImpl<VehicleTransferMappe
             throw new CustomException("非管理员用户登录");
         }
 
-        if (administrator.getStatus().equals("0")) {
+        if (administrator.getStatus().equals("科员")) {
             this.updateById(vehicleTransfer);
         } else {
             throw new CustomException("权限不足");

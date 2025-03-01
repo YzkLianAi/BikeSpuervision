@@ -57,6 +57,7 @@ public class PassReview implements Serializable {
     @TableField(value = "plate_number")
     private String plateNumber;
 
+    //TODO 再加一个图片字段 image
     /**
      * 证明材料
      */

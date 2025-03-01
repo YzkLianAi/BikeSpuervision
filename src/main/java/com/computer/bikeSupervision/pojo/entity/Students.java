@@ -41,6 +41,12 @@ public class Students implements Serializable {
     private String password;
 
     /**
+     * 邮箱
+     */
+    @TableField(value = "email")
+    private String email;
+
+    /**
      * 分数
      */
     @TableField(value = "score")

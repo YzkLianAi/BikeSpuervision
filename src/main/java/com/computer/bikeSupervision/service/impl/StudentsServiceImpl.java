@@ -21,13 +21,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -39,47 +42,8 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
     @Autowired
     private PlatePassMapper platePassMapper;
 
-    /**
-     * 学生二维码生成
-     *
-     * @param id
-     * @return
-     * @throws Exception
-     */
-    //TODO 后续要删除
-    /*@Override
-    public String generateSqCode(Long id) throws Exception {
-        // 根据id查询当前人的信息
-        Students student = this.getById(id);
-        // 断是否绑定车牌号和通行证号
-        if (student.getPlateNumber() == null){
-            throw new CustomException("请先绑定车牌号");
-        }
-
-        if (student.getPassNumber() == null){
-            throw new CustomException("请先绑定通行证号");
-        }
-
-        StudentSQVo studentSQVo = new StudentSQVo();
-        // 第一个参数是原始数据 第二参数 为 拷贝的对象目标
-        BeanUtils.copyProperties(student, studentSQVo);
-
-        log.info("拷贝好的属性：{}", studentSQVo);
-        // 将实体类转换成json格式的数据 用于生成二维码
-        String json = JSONObject.toJSONString(studentSQVo);
-
-        // 将此部分数据作为内容 用于生成二维码图片
-        MultipartFile image = qrCodeGenerator.generateQRCodeAsMultipartFile(json);
-        // 将二维码上传到七牛云
-        String url = qiniuCloudUtils.uploadImage(image);
-
-        // 将url保存到学生的二维码云端路径字段当中
-        student.setQrCode(url);
-        // 更新学生信息
-        this.updateById(student);
-        // 返回url路径
-        return url;
-    }*/
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 学生登录
@@ -88,9 +52,8 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
     public String login(StudentLoginDto studentLoginDto) {
 
         LambdaQueryWrapper<Students> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Students::getStudentNumber, studentLoginDto.getStudentNumber())
-                .eq(Students::getPassword, studentLoginDto.getPassword())
-                .eq(Students::getSchoolName, studentLoginDto.getSchoolName());
+        queryWrapper.eq(Students::getEmail, studentLoginDto.getEmail())
+                .eq(Students::getPassword, studentLoginDto.getPassword());
 
         Students student = this.getOne(queryWrapper);
         if (student != null) {
@@ -104,6 +67,10 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
             String token = "Bearea" + " " + jwt;
             log.info(token);
             //将生成的令牌返回 后续前端的每次请求都必须携带这个令牌
+
+            // 将学生信息缓存到 Redis 中，设置过期时间为 1 小时
+            redisTemplate.opsForValue().set("student:" + student.getId(), student, 12, TimeUnit.HOURS);
+
             return token;
         }
         throw new CustomException("用户名或密码错误");
@@ -135,6 +102,7 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
         //添加过滤条件
         queryWrapper.like(StringUtils.isNotEmpty(name), Students::getStudentName, name)
                 .eq(Students::getSchoolName, schoolName);
+
         //添加排序条件
         //根据最后的更新时间进行降序排序 Desc：降序 Asc：升序
         queryWrapper.orderByDesc(Students::getUpdateTime);
@@ -206,6 +174,25 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
         }
 
         this.updateById(students);
+    }
+
+
+    @Override
+    public String getStudentNameByStudentNumber(String studentNumber) {
+        LambdaQueryWrapper<Students> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Students::getStudentNumber, studentNumber);
+        Students student = this.getOne(wrapper);
+        return student != null ? student.getStudentName() : null;
+    }
+
+    //扣分
+    @Override
+    public void updateStudentScore(String studentNumber, BigDecimal deductionScore) {
+        LambdaQueryWrapper<Students> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Students::getStudentNumber, studentNumber);
+        Students student = this.getOne(wrapper);
+        student.setScore(student.getScore().subtract(deductionScore));
+        this.updateById(student);
     }
 }
 

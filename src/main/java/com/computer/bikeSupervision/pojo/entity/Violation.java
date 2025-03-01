@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -63,7 +64,7 @@ public class Violation implements Serializable {
      * 扣分
      */
     @TableField(value = "deduction_score")
-    private String deductionScore;
+    private BigDecimal deductionScore;
 
 
     /**

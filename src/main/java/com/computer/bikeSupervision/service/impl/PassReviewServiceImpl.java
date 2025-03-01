@@ -81,7 +81,6 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         // 先生成 二维码 然后把二维码一起放到 模板当中
         MultipartFile qrImage = platePassService.generateSqOneCode(passReview, passNumber);
 
-        // TODO 还差一个调用图片工具类 -> 生成特定的通行证图片
         MultipartFile multipartFile = imageProcessorUtils.generatePassImage(passReview.getPlateNumber(), passNumber, qrImage);
         // 调用图片上传工具类
         String uploadUrl = aliOSSUtils.upload(multipartFile);
