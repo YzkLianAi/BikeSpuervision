@@ -1,16 +1,18 @@
 package com.computer.bikeSupervision.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-@Service
+@Component
+@Slf4j
 public class VerificationCodeUtil {
 
     @Autowired
@@ -48,7 +50,14 @@ public class VerificationCodeUtil {
         message.setTo(email);
         message.setSubject("注册验证码");
         message.setText("您的注册验证码是：" + code + "，有效期为5分钟。");
-        javaMailSender.send(message);
+        log.info("发送验证码到邮箱: {}, 验证码: {}", email, code);
+        try {
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            // 处理邮件发送异常，例如记录日志或抛出自定义异常
+            e.printStackTrace();
+            // 这里可以根据实际需求进行更详细的异常处理
+        }
     }
 
     /**

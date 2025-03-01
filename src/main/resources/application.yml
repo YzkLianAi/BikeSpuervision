@@ -21,7 +21,10 @@ spring:
     password: 20040412
     database: 0
   mail:
-    username: zhiyiOnline@163.com # 发件人邮箱账号
+    host: smtp.qq.com
+    port: 587
+    username: 2942834094@qq.com
+    password: kvdjmodhxbhcdefg
 
 #mybatis配置
 mybatis:

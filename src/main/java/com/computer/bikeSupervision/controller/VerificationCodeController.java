@@ -1,5 +1,6 @@
 package com.computer.bikeSupervision.controller;
 
+import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.utils.VerificationCodeUtil;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +24,9 @@ public class VerificationCodeController {
      * @return 发送结果
      */
     @PostMapping("/send")
-    public String sendVerificationCode(@RequestParam String email) {
+    public Result<String> sendVerificationCode(@RequestParam String email) {
         verificationCodeService.sendVerificationCode(email);
-        return "验证码已发送，请查收邮箱。";
+        return Result.success("验证码发送成功");
     }
 
     /**
@@ -36,7 +37,12 @@ public class VerificationCodeController {
      * @return 校验结果
      */
     @PostMapping("/verify")
-    public boolean verifyCode(@RequestParam String email, @RequestParam String code) {
-        return verificationCodeService.verifyCode(email, code);
+    public Result<String> verifyCode(@RequestParam String email, @RequestParam String code) {
+
+        if (verificationCodeService.verifyCode(email, code)) {
+            return Result.success("验证码校验成功");
+        } else {
+            return Result.error("验证码校验失败");
+        }
     }
 }
