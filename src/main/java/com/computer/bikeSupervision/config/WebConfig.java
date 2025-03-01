@@ -28,6 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
         list.add("/Web/Students/register");
         list.add("/Web/Administrator/login");
         list.add("/Web/Administrator/register");
+        list.add("/verification/**");
+
 
         log.info("排除拦截路径: {}", list);
 

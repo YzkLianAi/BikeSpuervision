@@ -20,6 +20,8 @@ spring:
     port: 6379
     password: 20040412
     database: 0
+  mail:
+    username: zhiyiOnline@163.com # 发件人邮箱账号
 
 #mybatis配置
 mybatis:
