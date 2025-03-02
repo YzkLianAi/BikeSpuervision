@@ -39,7 +39,7 @@ public class PlatePassPageVo {
     /**
      * 车辆图片
      */
-    private String image;
+    private String vehicleImage;
 
     /**
      * 通行证图片云端路径

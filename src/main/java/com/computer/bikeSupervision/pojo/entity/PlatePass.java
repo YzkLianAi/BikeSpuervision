@@ -48,8 +48,8 @@ public class PlatePass implements Serializable {
     /**
      * 车辆图片
      */
-    @TableField(value = "image")
-    private String image;
+    @TableField(value = "vehicle_image")
+    private String vehicleImage;
 
     /**
      * 通行证图片云端路径

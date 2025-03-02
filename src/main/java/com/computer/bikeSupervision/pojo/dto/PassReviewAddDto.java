@@ -17,8 +17,8 @@ public class PassReviewAddDto {
     /**
      * 车辆图片
      */
-    @TableField(value = "image")
-    private String image;
+    @TableField(value = "vehicle_image")
+    private String vehicleImage;
 
     /**
      * 证明材料
