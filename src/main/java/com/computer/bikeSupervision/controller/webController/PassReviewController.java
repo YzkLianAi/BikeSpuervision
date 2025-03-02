@@ -62,7 +62,7 @@ public class PassReviewController {
             //redis中不存在 去数据库中查
             students = studentsService.getById(currentId);
         }
-
+        log.info("新增通行证信息:{}", passReviewAddDto);
         PassReview passReview = BeanUtil.copyProperties(passReviewAddDto, PassReview.class);
 
         passReview.setSchoolName(students.getSchoolName());
