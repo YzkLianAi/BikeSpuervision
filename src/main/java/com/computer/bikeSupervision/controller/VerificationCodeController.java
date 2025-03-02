@@ -25,7 +25,13 @@ public class VerificationCodeController {
      */
     @PostMapping("/send")
     public Result<String> sendVerificationCode(@RequestParam String email) {
-        verificationCodeService.sendVerificationCode(email);
+
+        try {
+            verificationCodeService.sendVerificationCode(email);
+
+        } catch (Exception e) {
+            log.error("验证码发送失败: {}", e.getMessage());
+        }
         return Result.success("验证码发送成功");
     }
 

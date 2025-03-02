@@ -43,7 +43,7 @@ public class SQController {
     @PostMapping("/generateSqCode")
     public Result<String> generateSqCode(String plateNumber) throws Exception {
         //获取当前登陆人的id
-        Long id = BaseContext.getCurrentId();
+        String id = BaseContext.getCurrentId();
         //生成二维码 获取云端存储的url路径并返回给前端
         String url = platePassService.generateSqCode(id,plateNumber);
 
