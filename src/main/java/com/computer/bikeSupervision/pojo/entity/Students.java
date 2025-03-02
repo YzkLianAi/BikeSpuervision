@@ -80,8 +80,8 @@ public class Students implements Serializable {
     /**
      * 头像（云端url）
      */
-    @TableField(value = "image")
-    private String image;
+    @TableField(value = "head_image")
+    private String headImage;
 
 
     /**
