@@ -174,7 +174,6 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
     public void updateViolation(Violation violation) {
         //拿出里面的 车牌号
         String licencePlate = violation.getLicencePlate();
-        //TODO 注释
         //根据车牌号查询学生学号
         String studentNumber = platePassService.getStudentNumberByLicencePlate(licencePlate);
         //如果查询为空 则没有学生可以进行修改 直接返回 空
