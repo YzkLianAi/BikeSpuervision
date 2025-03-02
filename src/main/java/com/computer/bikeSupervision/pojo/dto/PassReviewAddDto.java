@@ -15,6 +15,12 @@ public class PassReviewAddDto {
     private String plateNumber;
 
     /**
+     * 车辆图片
+     */
+    @TableField(value = "image")
+    private String image;
+
+    /**
      * 证明材料
      */
     @TableField(value = "material")

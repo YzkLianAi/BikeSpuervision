@@ -5,13 +5,15 @@ package com.computer.bikeSupervision.common;
  */
 public class BaseContext {
     //创建ThreadLocal对象
-    private static final ThreadLocal<Long> ThreadLocal = new InheritableThreadLocal<>();
+    private static final ThreadLocal<String> ThreadLocal = new InheritableThreadLocal<>();
+
     //设置当前线程的操作人id
-    public static void setCurrentId(Long id) {
+    public static void setCurrentId(String id) {
         ThreadLocal.set(id);
     }
+
     //拿取当前操作线程的操作人id
-    public static Long getCurrentId() {
+    public static String getCurrentId() {
         return ThreadLocal.get();
     }
 

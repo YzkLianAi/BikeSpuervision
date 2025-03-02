@@ -13,7 +13,7 @@ public class ViolationPageVo {
     /**
      * 主键id
      */
-    private Long id;
+    private String id;
 
     /**
      * 车牌号
@@ -69,11 +69,11 @@ public class ViolationPageVo {
     /**
      * 创建管理者
      */
-    private Long createUser;
+    private String createUser;
 
     /**
      * 审核人员
      */
-    private Long updateUser;
+    private String updateUser;
 
 }

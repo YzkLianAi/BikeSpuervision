@@ -19,7 +19,7 @@ public class PassReview implements Serializable {
      * 主键id
      */
     @TableId(value = "id")
-    private Long id;
+    private String id;
 
     /**
      * 所属学校
@@ -57,7 +57,12 @@ public class PassReview implements Serializable {
     @TableField(value = "plate_number")
     private String plateNumber;
 
-    //TODO 再加一个图片字段 image
+    /**
+     * 车辆图片
+     */
+    @TableField(value = "image")
+    private String image;
+
     /**
      * 证明材料
      */
@@ -141,11 +146,11 @@ public class PassReview implements Serializable {
      * 创建人
      */
     @TableField(value = "create_user",fill = FieldFill.INSERT)
-    private Long createUser;
+    private String createUser;
 
     /**
      * 修改人
      */
     @TableField(value = "update_user",fill = FieldFill.INSERT_UPDATE)
-    private Long updateUser;
+    private String updateUser;
 }

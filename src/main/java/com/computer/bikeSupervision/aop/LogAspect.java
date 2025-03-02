@@ -26,7 +26,7 @@ public class LogAspect {
     @Around("@annotation(com.computer.bikeSupervision.anno.log)")//切入点表达式
     public Object recordLog(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         //操作人
-        Long operateUser = BaseContext.getCurrentId();
+        String operateUser = BaseContext.getCurrentId();
 
         //操作时间
         LocalDateTime operateTime = LocalDateTime.now();

@@ -13,7 +13,7 @@ public class StudentsPageVo {
     /**
      * 主键id
      */
-    private Long id;
+    private String id;
 
     /**
      * 学生姓名
@@ -58,11 +58,11 @@ public class StudentsPageVo {
     /**
      * 创建人
      */
-    private Long createUser;
+    private String createUser;
 
     /**
      * 更新人
      */
-    private Long updateUser;
+    private String updateUser;
 
 }

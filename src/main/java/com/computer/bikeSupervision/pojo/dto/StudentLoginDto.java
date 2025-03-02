@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class StudentLoginDto {
 
-    private String email;    //学号
+    private String email;    //邮箱
 
     private String password;    //密码
 

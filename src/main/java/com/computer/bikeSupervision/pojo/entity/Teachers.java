@@ -1,12 +1,12 @@
 package com.computer.bikeSupervision.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 教师表
@@ -20,7 +20,7 @@ public class Teachers implements Serializable {
      * 主键id
      */
     @TableId(value = "id")
-    private Long id;
+    private String id;
 
     /**
      * 工号
@@ -104,13 +104,13 @@ public class Teachers implements Serializable {
      * 创建人
      */
     @TableField(value = "create_user")
-    private Long createUser;
+    private String createUser;
 
     /**
      * 更新人
      */
     @TableField(value = "update_user")
-    private Long updateUser;
+    private String updateUser;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

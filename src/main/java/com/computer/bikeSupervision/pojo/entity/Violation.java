@@ -20,7 +20,7 @@ public class Violation implements Serializable {
      * 主键id
      */
     @TableId(value = "id")
-    private Long id;
+    private String id;
 
     /**
      * 车牌号
@@ -89,12 +89,12 @@ public class Violation implements Serializable {
      * 创建管理者
      */
     @TableField(value = "create_user", fill = FieldFill.INSERT)
-    private Long createUser;
+    private String createUser;
 
     /**
      * 审核人员
      */
     @TableField(value = "update_user", fill = FieldFill.INSERT_UPDATE)
-    private Long updateUser;
+    private String updateUser;
 
 }

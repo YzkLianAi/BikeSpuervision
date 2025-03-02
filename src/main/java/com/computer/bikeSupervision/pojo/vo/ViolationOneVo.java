@@ -10,7 +10,7 @@ public class ViolationOneVo {
     /**
      * 主键id
      */
-    private Long id;
+    private String id;
 
     /**
      * 车牌号

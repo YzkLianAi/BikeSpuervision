@@ -19,7 +19,7 @@ public class PlatePass implements Serializable {
      * 主键id
      */
     @TableId(value = "id")
-    private Long id;
+    private String id;
 
     /**
      * 学号
@@ -46,6 +46,12 @@ public class PlatePass implements Serializable {
     private String passNumber;
 
     /**
+     * 车辆图片
+     */
+    @TableField(value = "image")
+    private String image;
+
+    /**
      * 通行证图片云端路径
      */
     @TableField(value = "pass_image")
@@ -56,6 +62,13 @@ public class PlatePass implements Serializable {
      */
     @TableField(value = "qr_code")
     private String qrCode;
+
+    /**
+     * 使用状态
+     */
+    @TableField(value = "flag")
+    private String flag;
+
 
     /**
      * 创建时间
@@ -73,13 +86,13 @@ public class PlatePass implements Serializable {
      * 创建人
      */
     @TableField(value = "create_user", fill = FieldFill.INSERT)
-    private Long createUser;
+    private String createUser;
 
     /**
      * 更新人
      */
     @TableField(value = "update_user", fill = FieldFill.INSERT_UPDATE)
-    private Long updateUser;
+    private String updateUser;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
