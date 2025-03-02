@@ -45,6 +45,7 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
     @Autowired
     private StudentsService studentsService;
 
+    //通行证信息查询
     @Override
     public PageBean searchPage(Integer pageNum, Integer pageSize, String currentId) {
         //1.设置分页参数
@@ -85,8 +86,8 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         platePass.setStudentNumber(passReview.getNumber());
         platePass.setSchoolName(passReview.getSchoolName());
         platePass.setPlateNumber(passReview.getPlateNumber());
-        //新增对车辆图片的覆盖
-        platePass.setImage(passReview.getImage());
+        //新增对车辆图片字段
+        platePass.setVehicleImage(passReview.getVehicleImage());
         platePass.setPassNumber(passNumber);
         // 先生成 二维码 然后把二维码一起放到 模板当中
         MultipartFile qrImage = platePassService.generateSqOneCode(passReview, passNumber);
@@ -100,6 +101,7 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         platePassService.save(platePass);
     }
 
+    //已登记车辆查询
     @Override
     public PageBean searchPlate(Integer pageNum, Integer pageSize, String currentId) {
         // 1. 设置分页参数，只调用一次
@@ -175,6 +177,7 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         return new PageBean(platePassPageVoPage.getTotal(), platePassPageVoPage.getResult());
     }
 
+    //获得通行证号码
     private String generatePassNumber(String studentNumber, String plateNumber) {
         // 从学号中取后三位
         String studentNumberSuffix = getLastThreeDigits(studentNumber);
@@ -187,7 +190,7 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         return studentNumberSuffix + plateNumberSuffix + randomThreeDigits;
     }
 
-    // 获取字符串的后三位
+    // 获取字符串 的 后三位
     private String getLastThreeDigits(String str) {
         if (str == null) {
             return "000";
