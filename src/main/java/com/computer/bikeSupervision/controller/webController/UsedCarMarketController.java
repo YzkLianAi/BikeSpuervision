@@ -39,7 +39,7 @@ public class UsedCarMarketController {
     @PostMapping("/publish")
     public Result<String> publishUsedCarInfo(@RequestBody UsedCarMarketPublishDto usedCarMarketPublishDto) {
         //获取当前登陆人 id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("当前操作人：{}, 发布二手交易信息：{}", currentId, usedCarMarketPublishDto);
 
 
@@ -56,7 +56,7 @@ public class UsedCarMarketController {
     @GetMapping("/querySellerUsedCarInfo")
     public Result<List<UsedCarMarket>> querySellerUsedCarInfo() {
         //获取当前登陆人 id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
 
         log.info("当前操作人：{}, 查询自己已发布的二手信息", currentId);
         //查询该学生学校的二手交易信息
@@ -87,7 +87,7 @@ public class UsedCarMarketController {
     @GetMapping("/queryPurchaserUsedCarInfo")
     public Result<List<UsedCarMarket>> queryPurchaserUsedCarInfo() {
         //获取当前登陆人 id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("当前操作人：{}, 查询所有发布的且为销售的二手信息", currentId);
 
         //查询该学生学校的二手交易信息
@@ -103,7 +103,7 @@ public class UsedCarMarketController {
     @PostMapping("/auditPublishInfo")
     public Result<String> auditPublishInfo(@RequestBody UsedCarMarket usedCarMarket) {
         //获取当前登陆人 id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("当前操作人：{}", currentId);
 
         //身份校验

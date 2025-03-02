@@ -31,7 +31,7 @@ public class VehicleTransferController {
     @PostMapping("/addTransfer")
     public Result<String> addTransfer(@RequestBody VehicleTransfer vehicleTransfer) {
         //获取当前登陆人 id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("当前操作人：{}, 转让交易信息：{}", currentId, vehicleTransfer);
 
         vehicleTransferService.addTransfer(vehicleTransfer, currentId);
@@ -46,7 +46,7 @@ public class VehicleTransferController {
     @GetMapping("/findAllTransfer")
     public Result<List<VehicleTransfer>> findAllTransfer() {
         //获取当前登陆人id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("当前操作人：{}", currentId);
 
         List<VehicleTransfer> vehicleTransfers = vehicleTransferService.findAllTransfer(currentId);
@@ -78,7 +78,7 @@ public class VehicleTransferController {
     @ApiOperation(value = "审核二手转让交易")
     @PostMapping("/checkTransfer")
     public Result<String> checkTransfer(@RequestBody VehicleTransfer vehicleTransfer) {
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("当前操作人：{}, 审核二手转让交易：{}", currentId, vehicleTransfer);
 
         vehicleTransferService.checkTransfer(vehicleTransfer, currentId);

@@ -85,7 +85,7 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         platePass.setStudentNumber(passReview.getNumber());
         platePass.setSchoolName(passReview.getSchoolName());
         platePass.setPlateNumber(passReview.getPlateNumber());
-        //TODO 新增对车辆图片的覆盖
+        //新增对车辆图片的覆盖
         platePass.setImage(passReview.getImage());
         platePass.setPassNumber(passNumber);
         // 先生成 二维码 然后把二维码一起放到 模板当中

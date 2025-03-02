@@ -37,15 +37,15 @@ public class ViolationController {
     @ApiOperation(value = "违法信息新增")
     @PostMapping("/violation")
     public Result<String> addViolation(@RequestBody ViolationAddDto violationAddDto) {
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("当前操作人id：{}", currentId);
 
         log.info("新增违法信息：{}", violationAddDto);
 
         // 数据拷贝
         Violation violation = BeanUtil.copyProperties(violationAddDto, Violation.class);
-        //生成5~10分的扣分
-        violation.setDeductionScore(BigDecimal.valueOf(Math.random() * 5 + 5));
+        //生成5~10分的扣分 负数
+        violation.setDeductionScore(BigDecimal.valueOf((Math.random() * 5 + 5) * -1));
 
         violationService.save(violation);
         return Result.success("新增成功");
@@ -60,7 +60,7 @@ public class ViolationController {
         log.info("分页信息：pageNum: {}, pageSize: {}, railway: {}, licencePlate: {}", pageNum, pageSize, cause, licencePlate);
 
         //获取当前线程操作人 id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
 
         PageBean pageBean = violationService.searchPage(pageNum, pageSize, cause, licencePlate, currentId);
 
@@ -73,7 +73,7 @@ public class ViolationController {
         //就是修改违法信息当中 的 状态字段
         log.info("违法信息审核：{}", violationPageVo);
         // 获取当前线程操作人 id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("当前操作人id：{}", currentId);
         LambdaQueryWrapper<Administrator> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(Administrator::getId, currentId);
@@ -88,6 +88,7 @@ public class ViolationController {
 
             //审核流程 审批通过后要扣分
             if (violation.getCheckStatus().equals("审核通过")) {
+                // 对扣分进行处理
                 violationService.updateViolation(violation);
             }
             violationService.updateById(violation);
@@ -106,7 +107,7 @@ public class ViolationController {
                                               String cause, String licencePlate) {
 
         //获取当前线程操作人 id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("分页信息：pageNum: {}, pageSize: {}, railway: {}, licencePlate: {}", pageNum, pageSize, cause, licencePlate);
         PageBean pageBean = violationService.searchProgressPage(pageNum, pageSize, cause, licencePlate, currentId);
 

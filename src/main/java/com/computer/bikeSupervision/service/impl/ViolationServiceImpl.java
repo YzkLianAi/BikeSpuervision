@@ -1,7 +1,7 @@
 package com.computer.bikeSupervision.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.computer.bikeSupervision.mapper.ViolationMapper;
 import com.computer.bikeSupervision.pojo.entity.Administrator;
@@ -36,9 +36,9 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
     @Autowired
     private StudentsService studentsService;
 
-
+    //查询 违章信息记录
     @Override
-    public PageBean searchPage(Integer pageNum, Integer pageSize, String cause, String licencePlate, Long currentId) {
+    public PageBean searchPage(Integer pageNum, Integer pageSize, String cause, String licencePlate, String currentId) {
         //1.设置分页参数
         //PageHelper.startPage(pageNum, pageSize);//设置分页参数
 
@@ -92,14 +92,9 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
 
     /**
      * 处理进度查询
-     *
-     * @param pageNum
-     * @param pageSize
-     * @param currentId
-     * @return
      */
     @Override
-    public PageBean searchProgressPage(int pageNum, int pageSize, String cause, String licencePlate, Long currentId) {
+    public PageBean searchProgressPage(int pageNum, int pageSize, String cause, String licencePlate, String currentId) {
         // 首先获取当前操作人信息 查询其对应学校
         LambdaQueryWrapper<Administrator> adminWrapper = new LambdaQueryWrapper<>();
         adminWrapper.eq(Administrator::getId, currentId);
@@ -116,7 +111,10 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
                 .eq(StringUtils.isNotEmpty(licencePlate), Violation::getLicencePlate, licencePlate)
                 .eq(Violation::getCheckStatus, "审核通过");
 
-        violationWrapper.orderByDesc(Violation::getUpdateTime);
+        // 先按照处理状态排序，未处理的（deal_status = "未处理"）排在前面
+        violationWrapper.orderByDesc(Violation::getDealStatus)
+                // 再按照修改时间降序排序
+                .orderByDesc(Violation::getUpdateTime);
 
         // 开启分页查询
         Page<Violation> page = PageHelper.startPage(pageNum, pageSize);
@@ -176,19 +174,30 @@ public class ViolationServiceImpl extends ServiceImpl<ViolationMapper, Violation
     public void updateViolation(Violation violation) {
         //拿出里面的 车牌号
         String licencePlate = violation.getLicencePlate();
+        //TODO 注释
         //根据车牌号查询学生学号
         String studentNumber = platePassService.getStudentNumberByLicencePlate(licencePlate);
-
+        //如果查询为空 则没有学生可以进行修改 直接返回 空
+        if (studentNumber == null) {
+            return;
+        }
         //拿学号去 学生信息表中 修改分数
         log.info("学生学号: {}, 扣分: {}", studentNumber, violation.getDeductionScore());
         studentsService.updateStudentScore(studentNumber, violation.getDeductionScore());
 
     }
 
+    //根据车牌查询违章信息
     @Override
     public List<Violation> getViolationsByLicensePlates(List<String> licensePlates) {
-        //根据车牌列表查询违章记录列表
-        return this.list(new QueryWrapper<Violation>().in("licence_plate", licensePlates));
+        if (CollectionUtils.isEmpty(licensePlates)) {
+            // 如果车牌号列表为空，直接返回空列表
+            return null;
+        }
+
+        LambdaQueryWrapper<Violation> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(Violation::getLicencePlate, licensePlates);
+        return this.list(queryWrapper);
     }
 }
 

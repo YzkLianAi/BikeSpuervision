@@ -31,7 +31,7 @@ public class UsedCarMarketServiceImpl extends ServiceImpl<UsedCarMarketMapper, U
     private PlatePassService platePassService;
 
     @Override
-    public void addUsedCarMarket(UsedCarMarketPublishDto usedCarMarketPublishDto, Long currentId) {
+    public void addUsedCarMarket(UsedCarMarketPublishDto usedCarMarketPublishDto, String currentId) {
         //首先 根据当前人的 查询 其基本信息 获取到其对应的学号和其传递过来的车牌号
         //去PlatePass中查询对应数据 如果有才允许新增
         LambdaQueryWrapper<Students> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -64,7 +64,7 @@ public class UsedCarMarketServiceImpl extends ServiceImpl<UsedCarMarketMapper, U
     }
 
     @Override
-    public List<UsedCarMarket> queryUsedCarMarket(Long currentId) {
+    public List<UsedCarMarket> queryUsedCarMarket(String currentId) {
         LambdaQueryWrapper<Students> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         //根据当前登陆人 id 查询学生信息
         lambdaQueryWrapper.eq(Students::getId, currentId);
@@ -83,7 +83,7 @@ public class UsedCarMarketServiceImpl extends ServiceImpl<UsedCarMarketMapper, U
     }
 
     @Override
-    public List<UsedCarMarket> querySellerUsedCarMarket(Long currentId) {
+    public List<UsedCarMarket> querySellerUsedCarMarket(String currentId) {
         LambdaQueryWrapper<Students> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         //根据当前登陆人 id 查询学生信息
         lambdaQueryWrapper.eq(Students::getId, currentId);

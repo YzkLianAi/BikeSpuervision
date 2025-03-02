@@ -47,7 +47,7 @@ public class PlatePassServiceImpl extends ServiceImpl<PlatePassMapper, PlatePass
     /**
      * 生成二维码
      */
-    public String generateSqCode(Long id, String plateNumber) throws Exception {
+    public String generateSqCode(String id, String plateNumber) throws Exception {
         // 根据id查询当前人的信息
         Students student = studentsMapper.selectById(id);
 

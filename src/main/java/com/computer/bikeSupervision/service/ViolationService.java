@@ -11,13 +11,13 @@ public interface ViolationService extends IService<Violation> {
     /**
      * 查询违规信息分页
      */
-    PageBean searchPage(Integer pageNum, Integer pageSize, String cause, String licencePlate, Long currentId);
+    PageBean searchPage(Integer pageNum, Integer pageSize, String cause, String licencePlate, String currentId);
 
 
     /**
      * 查询违规进度
      */
-    PageBean searchProgressPage(int pageNum, int pageSize, String cause, String licencePlate, Long currentId);
+    PageBean searchProgressPage(int pageNum, int pageSize, String cause, String licencePlate, String currentId);
 
 
     /**

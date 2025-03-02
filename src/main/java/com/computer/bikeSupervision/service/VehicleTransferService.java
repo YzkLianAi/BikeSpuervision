@@ -14,17 +14,17 @@ public interface VehicleTransferService extends IService<VehicleTransfer> {
     /**
      * 新增二手转让信息
      */
-    void addTransfer(VehicleTransfer vehicleTransfer, Long currentId);
+    void addTransfer(VehicleTransfer vehicleTransfer, String currentId);
 
     /**
      * 查询所有二手转让信息
      */
-    List<VehicleTransfer> findAllTransfer(Long currentId);
+    List<VehicleTransfer> findAllTransfer(String currentId);
 
     /**
      * 审核二手转让交易
      */
-    void checkTransfer(VehicleTransfer vehicleTransfer, Long currentId);
+    void checkTransfer(VehicleTransfer vehicleTransfer, String currentId);
 
     /**
      * 根据 id 查询二手转让信息

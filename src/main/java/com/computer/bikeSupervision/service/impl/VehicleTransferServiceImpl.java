@@ -38,7 +38,7 @@ public class VehicleTransferServiceImpl extends ServiceImpl<VehicleTransferMappe
      * 新增二手转让信息
      */
     @Override
-    public void addTransfer(VehicleTransfer vehicleTransfer, Long currentId) {
+    public void addTransfer(VehicleTransfer vehicleTransfer, String currentId) {
         LambdaQueryWrapper<Students> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Students::getId, currentId);
 
@@ -55,7 +55,7 @@ public class VehicleTransferServiceImpl extends ServiceImpl<VehicleTransferMappe
      * 查询所有二手转让信息
      */
     @Override
-    public List<VehicleTransfer> findAllTransfer(Long currentId) {
+    public List<VehicleTransfer> findAllTransfer(String currentId) {
         //设置条件查询器
         LambdaQueryWrapper<Administrator> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(Administrator::getId, currentId);
@@ -82,7 +82,7 @@ public class VehicleTransferServiceImpl extends ServiceImpl<VehicleTransferMappe
      * 审核二手转让交易
      */
     @Override
-    public void checkTransfer(VehicleTransfer vehicleTransfer, Long currentId) {
+    public void checkTransfer(VehicleTransfer vehicleTransfer, String currentId) {
         LambdaQueryWrapper<Administrator> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(Administrator::getId, currentId);
 

@@ -62,7 +62,7 @@ public class AdministratorController {
     @GetMapping("/getAdministratorById")
     public Result<Administrator> getStudentById() {
         //根据当前线程获取id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("获取当前登录信息的id:{}", currentId);
         //获取匹配的管理员信息
         Administrator administrator = administratorService.getById(currentId);

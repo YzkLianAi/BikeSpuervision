@@ -200,7 +200,6 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
     //扣分
     @Override
     public void updateStudentScore(String studentNumber, BigDecimal deductionScore) {
-        //TODO 扣分注释
         LambdaQueryWrapper<Students> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Students::getStudentNumber, studentNumber);
         Students student = this.getOne(wrapper);

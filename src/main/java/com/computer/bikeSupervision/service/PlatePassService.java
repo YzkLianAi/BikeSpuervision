@@ -17,7 +17,7 @@ public interface PlatePassService extends IService<PlatePass> {
      * @param id
      * @return
      */
-    String generateSqCode(Long id, String plateNumber) throws Exception;
+    String generateSqCode(String id, String plateNumber) throws Exception;
 
     /**
      * 学生查询自身通行证信息
