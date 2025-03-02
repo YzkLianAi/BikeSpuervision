@@ -26,7 +26,7 @@ public interface StudentsService extends IService<Students> {
     /**
      * 分页查询学生信息
      */
-    PageBean getStudentsPage(int page, int pageSize, String name,Long currentId);
+    PageBean getStudentsPage(int page, int pageSize, String name,String currentId);
 
     /**
      * 注册
@@ -47,4 +47,9 @@ public interface StudentsService extends IService<Students> {
      * 根据学号扣分
      */
     void updateStudentScore(String studentNumber, BigDecimal deductionScore);
+
+    /**
+     * 根据学号查询学院
+     */
+    String getCollegeByStudentNumber(String studentNumber);
 }

@@ -2,7 +2,9 @@ package com.computer.bikeSupervision.controller.webController;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.computer.bikeSupervision.common.BaseContext;
+import com.computer.bikeSupervision.common.CustomException;
 import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
 import com.computer.bikeSupervision.pojo.dto.StudentRegisterDto;
@@ -13,17 +15,17 @@ import com.computer.bikeSupervision.pojo.vo.StudentPlatePassVo;
 import com.computer.bikeSupervision.service.PlatePassService;
 import com.computer.bikeSupervision.service.StudentsService;
 import com.computer.bikeSupervision.service.ViolationService;
+import com.computer.bikeSupervision.utils.CustomSaltPasswordEncoder;
+import com.computer.bikeSupervision.utils.VerificationCodeUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -43,19 +45,21 @@ public class StudentsController {
     @Autowired
     private ViolationService violationService;
 
+    @Autowired
+    private VerificationCodeUtil verificationCodeUtil;
+
     @ApiOperation(value = "学生登录接口", notes = "需要转递邮箱和密码password")
     @PostMapping("/login")
     public Result<String> login(@ApiParam("学生登录Dto") @RequestBody StudentLoginDto studentLoginDto) {
         //获取当前学生的邮箱
-        String studentId = studentLoginDto.getEmail();
+        //String email = studentLoginDto.getEmail();
         //获取经过md5加密后的密码
-        String md5Password = DigestUtils.md5DigestAsHex(studentLoginDto.getPassword().getBytes());
-        studentLoginDto.setPassword(md5Password);
-        log.info("登录的学生邮箱:{},密码:{}", studentId, md5Password);
+        //String md5Password = DigestUtils.md5DigestAsHex(studentLoginDto.getPassword().getBytes());
+        //studentLoginDto.setPassword(md5Password);
 
         String token = studentsService.login(studentLoginDto);
 
-        return Result.setToken(token);
+        return Result.ok(token);
 
     }
 
@@ -64,36 +68,65 @@ public class StudentsController {
     public Result<String> register(@ApiParam("学生注册信息") @RequestBody StudentRegisterDto student) {
         log.info("学生注册信息:{}", student);
 
-        //将Dto 拷贝到 实体类
+        // 验证码校验
+        if (!verificationCodeUtil.verifyCode(student.getEmail(), student.getCode())) {
+            // 验证码校验失败，返回错误信息
+            throw new CustomException("验证码错误,请重新输入");
+        }
+
+        //做邮箱唯一性校验
+        if (studentsService.query().eq("email", student.getEmail()).one() != null) {
+            throw new CustomException("该邮箱已被注册");
+        }
+        String encodedPassword = CustomSaltPasswordEncoder.encodePassword(student.getPassword());
+        // 将 DTO 拷贝到实体类
         Students newStudent = BeanUtil.copyProperties(student, Students.class);
-        //执行新增操作
+        newStudent.setPassword(encodedPassword);
+        // 执行新增操作
         studentsService.save(newStudent);
-        //配置注册信息
+        // 配置注册信息
         studentsService.register(newStudent);
 
-        //返回注册成功
-        return Result.success("注册成功");
+        // 返回注册成功
+        return Result.ok("注册成功");
+    }
+
+    @ApiOperation("登出接口")
+    @GetMapping("/logout")
+    public Result<String> logout() {
+        String currentId = BaseContext.getCurrentId();
+        log.info("当前登录的学生id:{}", currentId);
+        Students students = studentsService.getById(currentId);
+        log.info("{} 正在尝试登出...", students.getEmail());
+        Boolean delete = redisTemplate.delete("student:" + students.getId());
+        if (Boolean.FALSE.equals(delete)) {
+            return Result.fail("退出失败，不要乱搞");
+        }
+        log.info("{} 成功登出...", students.getEmail());
+        return Result.ok("退出登录成功");
     }
 
     @ApiOperation(value = "获取当前登录的学生信息")
     @GetMapping("/getStudentById")
     public Result<Students> getStudentById() {
         // 根据当前线程获取 id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
 
-        // 先从 Redis 中获取学生信息
-        Students student = (Students) redisTemplate.opsForValue().get("student:" + currentId);
+        String key = "student:" + currentId;
+        // 从Redis中取出学生对象
+        String value = (String) redisTemplate.opsForValue().get(key);
+
+        // 将JSON字符串反序列化为学生对象
+        Students student = JSONObject.parseObject(value, Students.class);
+
+        log.info("当前登录的学生信息:{}", student);
 
         if (student == null) {
             // 如果 Redis 中不存在，再从数据库中查询
             student = studentsService.getById(currentId);
-            if (student != null) {
-                // 将查询到的学生信息缓存到 Redis 中，设置过期时间为 43200000L 毫秒（12 小时）
-                redisTemplate.opsForValue().set("student:" + student.getId(), student, 12, TimeUnit.HOURS);
-            }
         }
 
-        return Result.success(student);
+        return Result.ok(student);
     }
 
     @ApiOperation(value = "学生信息修改")
@@ -103,7 +136,7 @@ public class StudentsController {
         //修改学生信息
         studentsService.update(students);
 
-        return Result.success("修改成功");
+        return Result.ok("修改成功");
     }
 
 
@@ -112,44 +145,45 @@ public class StudentsController {
     public Result<PageBean> studentPage(@RequestParam(defaultValue = "1") int page,
                                         @RequestParam(defaultValue = "10") int pageSize,
                                         String name) {
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         log.info("当前操作人id:{}", currentId);
 
         log.info("page = {} , pageSize = {}, name = {}", page, pageSize, name);
 
         PageBean pageInfo = studentsService.getStudentsPage(page, pageSize, name, currentId);
 
-        return Result.success(pageInfo);
+        return Result.ok(pageInfo);
     }
 
     @ApiOperation(value = "查询自己的违章记录")
     @GetMapping("/getMyViolationRecords")
     public Result<List<Violation>> getMyViolationRecords() {
         // 根据当前线程获取 id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
 
         // 获取学生学号
         String studentNumber = studentsService.getById(currentId).getStudentNumber();
-
+        log.info("学生学号:{}", studentNumber);
         // 通过学号查询学生拥有的车牌号列表
         List<String> licensePlates = platePassService.getLicensePlatesByStudentNumber(studentNumber);
         // 根据车牌号列表查询违章记录
         List<Violation> violationRecords = violationService.getViolationsByLicensePlates(licensePlates);
-        return Result.success(violationRecords);
+        return Result.ok(violationRecords);
     }
 
-    //TODO 学生查询自己所拥有的通行证信息
     @ApiOperation(value = "学生查询自己所拥有的通行证信息")
     @GetMapping("/getStudentPass")
     public Result<List<StudentPlatePassVo>> getStudentPass() {
         //根据当前线程获取id
-        Long currentId = BaseContext.getCurrentId();
+        String currentId = BaseContext.getCurrentId();
         //获取匹配的学生信息
         Students student = studentsService.getById(currentId);
 
         List<StudentPlatePassVo> platePassList = platePassService.getStudentPass(student);
+        //查询出的通行证信息
+        log.info("查询出的通行证信息:{}", platePassList);
 
-        return Result.success(platePassList);
+        return Result.ok(platePassList);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.computer.bikeSupervision.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.computer.bikeSupervision.common.BaseContext;
@@ -14,6 +15,7 @@ import com.computer.bikeSupervision.pojo.entity.Students;
 import com.computer.bikeSupervision.pojo.vo.StudentsPageVo;
 import com.computer.bikeSupervision.service.AdministratorService;
 import com.computer.bikeSupervision.service.StudentsService;
+import com.computer.bikeSupervision.utils.CustomSaltPasswordEncoder;
 import com.computer.bikeSupervision.utils.JwtUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -23,7 +25,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -50,13 +51,22 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
      */
     @Override
     public String login(StudentLoginDto studentLoginDto) {
+        log.info("当前登录学生：{}", studentLoginDto);
 
+        //先比对邮箱是否错误
         LambdaQueryWrapper<Students> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Students::getEmail, studentLoginDto.getEmail())
-                .eq(Students::getPassword, studentLoginDto.getPassword());
+        queryWrapper.eq(Students::getEmail, studentLoginDto.getEmail());
 
         Students student = this.getOne(queryWrapper);
-        if (student != null) {
+        if (student == null) {
+            throw new CustomException("邮箱错误,请重新输入");
+        }
+
+        //比对原始密码 和 加密密码
+        // 验证密码 前者为传递的原密码 后者为 数据库中存放的加密密码
+        boolean isMatch = CustomSaltPasswordEncoder.matches(studentLoginDto.getPassword(), student.getPassword());
+
+        if (isMatch) {
             Map<String, Object> claims = new HashMap<>();
 
             claims.put("id", student.getId());
@@ -69,12 +79,13 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
             //将生成的令牌返回 后续前端的每次请求都必须携带这个令牌
 
             // 将学生信息缓存到 Redis 中，设置过期时间为 1 小时
-            redisTemplate.opsForValue().set("student:" + student.getId(), student, 12, TimeUnit.HOURS);
-
+            // 将学生对象存入Redis
+            String key = "student:" + student.getId();
+            String json = JSONObject.toJSONString(student);
+            redisTemplate.opsForValue().set(key, json, 12, TimeUnit.HOURS);
             return token;
         }
-        throw new CustomException("用户名或密码错误");
-
+        throw new CustomException("密码错误,请重新输入");
     }
 
     /**
@@ -86,7 +97,7 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
      * @return
      */
     @Override
-    public PageBean getStudentsPage(int page, int pageSize, String name, Long currentId) {
+    public PageBean getStudentsPage(int page, int pageSize, String name, String currentId) {
         //1.设置分页参数
         PageHelper.startPage(page, pageSize);//设置分页参数
 
@@ -160,22 +171,23 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
 
     /**
      * 根据id修改学生信息
-     *
-     * @param students
      */
     @Override
     public void update(Students students) {
-        // 需要先比对密码是否经过修改 -> 如果密码是将 123456 重新加密后的结果 则说明密码没有经过修改不需要再经过md5加密
-        // 将其重新设置成 123456 经过md5加密后的结果
-        if (students.getPassword().equals(DigestUtils.md5DigestAsHex("123456".getBytes()))) {
-            students.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
-        } else {
-            students.setPassword(DigestUtils.md5DigestAsHex(students.getPassword().getBytes()));
+        // 获取学生原信息
+        Students originalStudent = this.getById(students.getId());
+        // 判断密码是否被修改
+        if (originalStudent != null && students.getPassword() != null) {
+            // 如果新密码和原加密密码相同，说明学生没有修改密码，直接使用原加密密码
+            if (students.getPassword().equals(originalStudent.getPassword())) {
+                students.setPassword(originalStudent.getPassword());
+            } else {
+                // 新密码有修改，进行加密
+                students.setPassword(CustomSaltPasswordEncoder.encodePassword(students.getPassword()));
+            }
         }
-
         this.updateById(students);
     }
-
 
     @Override
     public String getStudentNameByStudentNumber(String studentNumber) {
@@ -188,11 +200,22 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
     //扣分
     @Override
     public void updateStudentScore(String studentNumber, BigDecimal deductionScore) {
+        //TODO 扣分注释
         LambdaQueryWrapper<Students> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Students::getStudentNumber, studentNumber);
         Students student = this.getOne(wrapper);
-        student.setScore(student.getScore().subtract(deductionScore));
+        //加扣分
+        student.setScore(student.getScore().add(deductionScore));
         this.updateById(student);
+    }
+
+    //查询学生的学院
+    @Override
+    public String getCollegeByStudentNumber(String studentNumber) {
+        LambdaQueryWrapper<Students> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Students::getStudentNumber, studentNumber);
+        Students student = this.getOne(wrapper);
+        return student != null ? student.getCollege() : null;
     }
 }
 
