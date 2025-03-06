@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME) //运行时生效
 @Target(ElementType.METHOD) //注解作用与方法上
-//注解类
-public @interface log {
+//注解类 annotation 类
+public @interface Log {
 }

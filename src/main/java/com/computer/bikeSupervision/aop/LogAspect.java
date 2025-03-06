@@ -1,9 +1,9 @@
 package com.computer.bikeSupervision.aop;
 
 import com.alibaba.fastjson.JSONObject;
-
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.mapper.OperateLogMapper;
+import com.computer.bikeSupervision.pojo.entity.OperateLog;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Component
-@Aspect //切面类
+@Aspect
 @Slf4j
 //Aop事务管理
 public class LogAspect {
@@ -23,7 +23,7 @@ public class LogAspect {
     @Autowired
     private OperateLogMapper operateLogMapper;
 
-    @Around("@annotation(com.computer.bikeSupervision.anno.log)")//切入点表达式
+    @Around("@annotation(com.computer.bikeSupervision.anno.Log)")//切入点表达式
     public Object recordLog(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         //操作人
         String operateUser = BaseContext.getCurrentId();
@@ -31,8 +31,8 @@ public class LogAspect {
         //操作时间
         LocalDateTime operateTime = LocalDateTime.now();
 
-        //操作类的类名
-        String className = proceedingJoinPoint.getTarget().getClass().getName();
+        //操作类的类名 只需要截取最后的 Controller类
+        String className = proceedingJoinPoint.getTarget().getClass().getSimpleName();
 
         //操作类的方法名
         String methodName = proceedingJoinPoint.getSignature().getName();
@@ -54,10 +54,17 @@ public class LogAspect {
         long costTime = end - begin;
 
         //记录操作日志
-        //OperateLog operateLog = new OperateLog(null, operateUser, operateTime, className, methodName, methodParams, returnValue, costTime);
+        OperateLog operateLog = new OperateLog();
+        operateLog.setOperateUser(operateUser);
+        operateLog.setOperateTime(operateTime);
+        operateLog.setClassName(className);
+        operateLog.setMethodName(methodName);
+        operateLog.setMethodParams(methodParams);
+        operateLog.setReturnValue(returnValue);
+        operateLog.setCostTime(costTime);
 
         //将日志保存到数据库中
-       //operateLogMapper.insert(operateLog);
+        operateLogMapper.insert(operateLog);
         log.info("耗时时间：{} ms", costTime);
 
         return result;
