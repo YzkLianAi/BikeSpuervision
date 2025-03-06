@@ -19,7 +19,7 @@ public class VerificationCodeUtil {
     private JavaMailSender javaMailSender;
 
     @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Value("${spring.mail.username}")
     private String senderEmail;
@@ -68,7 +68,7 @@ public class VerificationCodeUtil {
      * @return 校验结果
      */
     public boolean verifyCode(String email, String code) {
-        String storedCode = redisTemplate.opsForValue().get("code:" + email);
+        String storedCode = (String) redisTemplate.opsForValue().get("code:" + email);
         return code.equals(storedCode);
     }
 }
