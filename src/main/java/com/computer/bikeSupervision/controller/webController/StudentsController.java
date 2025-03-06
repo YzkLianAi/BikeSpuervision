@@ -67,6 +67,11 @@ public class StudentsController {
     @PostMapping("/register")
     public Result<String> register(@ApiParam("学生注册信息") @RequestBody StudentRegisterDto student) {
         log.info("学生注册信息:{}", student);
+        // 两个密码重复校验
+        if (!student.getPassword().equals(student.getRePassword())) {
+            // 密码不一致，返回错误信息
+            throw new CustomException("两次输入的密码不一致");
+        }
 
         // 验证码校验
         if (!verificationCodeUtil.verifyCode(student.getEmail(), student.getCode())) {
