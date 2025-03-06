@@ -1,6 +1,7 @@
 package com.computer.bikeSupervision.controller.webController;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.computer.bikeSupervision.anno.Log;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.pojo.dto.AdministratorLoginDto;
@@ -42,6 +43,7 @@ public class AdministratorController {
         return Result.setToken(token);
     }
 
+    @Log
     @ApiOperation(value = "管理员注册")
     @PostMapping("/register")
     public Result<String> register(@ApiParam("管理员注册信息") @RequestBody AdministratorRegisterDto administratorRegisterDto) {
@@ -71,12 +73,13 @@ public class AdministratorController {
     }
 
 
+    @Log
     @ApiOperation(value = "管理员信息修改")
     @PostMapping("/update")
-    public Result<String> updateStudent(@RequestBody Administrator administrator) {
-        log.info("管理员信息修改:{}", administrator);
+    public Result<String> updateStudent(@RequestBody Administrator admin) {
+        log.info("管理员信息修改:{}", admin);
         //修改学生信息
-        administratorService.update(administrator);
+        administratorService.update(admin);
 
         return Result.success("修改成功");
     }
