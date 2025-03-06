@@ -11,6 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+// 配置 Spring Security 的类。Spring Security 是一个功能强大的安全框架，用于保护基于 Spring 的应用程序
 public class SecurityConfig {
 
     @Bean
