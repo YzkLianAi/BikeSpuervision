@@ -1,5 +1,7 @@
 package com.computer.bikeSupervision.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.computer.bikeSupervision.common.CustomException;
 import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.utils.VerificationCodeUtil;
 import io.swagger.annotations.Api;
@@ -19,20 +21,29 @@ public class VerificationCodeController {
 
     /**
      * 发送验证码到指定邮箱
-     *
-     * @param email 收件人邮箱
-     * @return 发送结果
      */
     @PostMapping("/send")
     public Result<String> sendVerificationCode(@RequestParam String email) {
+        log.info("接收到的邮箱数据: {}", email);
+        String actualEmail = email;
+        try {
+            // 尝试将传入的数据解析为 JSON 对象
+            JSONObject jsonObject = JSONObject.parseObject(email);
+            // 从 JSON 对象中提取邮箱地址
+            actualEmail = jsonObject.getString("email");
+        } catch (Exception e) {
+            // 解析失败，说明传入的不是 JSON 字符串，直接使用原始数据
+            log.info("传入的数据不是 JSON 格式，直接使用原始数据作为邮箱地址");
+        }
 
         try {
-            verificationCodeService.sendVerificationCode(email);
-
+            // 发送验证码
+            verificationCodeService.sendVerificationCode(actualEmail);
+            return Result.ok("验证码发送成功");
         } catch (Exception e) {
             log.error("验证码发送失败: {}", e.getMessage());
+            throw new CustomException("验证码发送失败");
         }
-        return Result.success("验证码发送成功");
     }
 
     /**
