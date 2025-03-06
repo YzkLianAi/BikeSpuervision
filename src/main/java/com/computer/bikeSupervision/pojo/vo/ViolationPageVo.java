@@ -31,7 +31,7 @@ public class ViolationPageVo {
     private String studentName;
 
     /**
-     * 违法原因（在想要不要存编号）
+     * 违法原因
      */
     private String cause;
 

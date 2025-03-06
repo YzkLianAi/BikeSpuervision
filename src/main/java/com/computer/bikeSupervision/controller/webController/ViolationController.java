@@ -2,6 +2,7 @@ package com.computer.bikeSupervision.controller.webController;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.computer.bikeSupervision.anno.Log;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.pojo.dto.ViolationAddDto;
@@ -34,6 +35,7 @@ public class ViolationController {
     @Autowired
     private AdministratorService administratorService;
 
+    @Log
     @ApiOperation(value = "违法信息新增")
     @PostMapping("/violation")
     public Result<String> addViolation(@RequestBody ViolationAddDto violationAddDto) {
@@ -67,6 +69,7 @@ public class ViolationController {
         return Result.success(pageBean);
     }
 
+    @Log
     @ApiOperation(value = "违法信息审核")
     @PostMapping("/violationAudit")
     public Result<String> violationAudit(@RequestBody ViolationPageVo violationPageVo) {
@@ -119,7 +122,7 @@ public class ViolationController {
     public Result<ViolationOneVo> violationOne() {
 
         LambdaQueryWrapper<Violation> violationLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        violationLambdaQueryWrapper.eq(Violation::getId, "1895394236656269954");
+        violationLambdaQueryWrapper.eq(Violation::getId, "1895808713813106690");
 
         Violation violation = violationService.getOne(violationLambdaQueryWrapper);
 
