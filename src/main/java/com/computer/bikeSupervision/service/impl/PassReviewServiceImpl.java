@@ -1,6 +1,7 @@
 package com.computer.bikeSupervision.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.computer.bikeSupervision.mapper.PassReviewMapper;
 import com.computer.bikeSupervision.pojo.entity.*;
@@ -47,7 +48,7 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
 
     //通行证信息查询
     @Override
-    public PageBean searchPage(Integer pageNum, Integer pageSize, String currentId) {
+    public PageBean searchPage(Integer pageNum, Integer pageSize, String college, String licencePlate, String currentId) {
         //1.设置分页参数
         PageHelper.startPage(pageNum, pageSize);//设置分页参数
 
@@ -63,7 +64,9 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         LambdaQueryWrapper<PassReview> passReviewLambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 比对学校信息 和 检查状态
         passReviewLambdaQueryWrapper.eq(PassReview::getSchoolName, schoolName)
-                .eq(PassReview::getStatus, "未处理");
+                .eq(PassReview::getStatus, "未处理")
+                .like(StringUtils.isNotEmpty(college), PassReview::getCollege, college)
+                .eq(StringUtils.isNotEmpty(licencePlate), PassReview::getPlateNumber, licencePlate);
 
         passReviewLambdaQueryWrapper.orderByDesc(PassReview::getUpdateTime);
 
@@ -120,7 +123,7 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         // 比对学校信息
         platePassLambdaQueryWrapper.eq(PlatePass::getSchoolName, schoolName);
 
-
+        // 正常使用的放在上面
         platePassLambdaQueryWrapper.orderByDesc(PlatePass::getFlag)
                 .orderByDesc(PlatePass::getUpdateTime);
 

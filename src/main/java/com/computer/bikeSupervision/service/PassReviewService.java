@@ -11,7 +11,7 @@ public interface PassReviewService extends IService<PassReview> {
     /**
      * 查询分页
      */
-    PageBean searchPage(Integer pageNum, Integer pageSize, String currentId);
+    PageBean searchPage(Integer pageNum, Integer pageSize, String college, String licencePlate, String currentId);
 
     /**
      * 审核通过

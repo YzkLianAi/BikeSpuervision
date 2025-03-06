@@ -3,6 +3,7 @@ package com.computer.bikeSupervision.controller.webController;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.computer.bikeSupervision.anno.Log;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.Result;
 import com.computer.bikeSupervision.pojo.dto.PassReviewAddDto;
@@ -42,6 +43,7 @@ public class PassReviewController {
     @Autowired
     private PlatePassService platePassService;
 
+    @Log
     @ApiOperation(value = "通行证审核信息新增")
     @PostMapping("/addPassReview")
     public Result<String> addPassReview(@RequestBody PassReviewAddDto passReviewAddDto) {
@@ -79,14 +81,15 @@ public class PassReviewController {
     @ApiOperation(value = "通行证信息分页查询")
     @GetMapping("/passReviewPage")
     public Result<PageBean> getPassReview(@RequestParam(defaultValue = "1") Integer pageNum,
-                                          @RequestParam(defaultValue = "10") Integer pageSize) {
+                                          @RequestParam(defaultValue = "10") Integer pageSize,
+                                          String college, String licencePlate) {
 
-        log.info("分页信息：pageNum: {}, pageSize: {}", pageNum, pageSize);
+        log.info("分页信息：pageNum: {}, pageSize: {}, college: {}, licencePlate: {}", pageNum, pageSize, college, licencePlate);
 
         //获取当前线程操作人 id
         String currentId = BaseContext.getCurrentId();
 
-        PageBean pageBean = passReviewService.searchPage(pageNum, pageSize, currentId);
+        PageBean pageBean = passReviewService.searchPage(pageNum, pageSize, college, licencePlate, currentId);
 
         return Result.success(pageBean);
     }
