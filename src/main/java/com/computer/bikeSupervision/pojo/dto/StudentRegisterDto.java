@@ -13,6 +13,8 @@ public class StudentRegisterDto {
     private String email;
     //密码
     private String password;
+    //重复密码
+    private String rePassword;
     //验证码
     private String code;
 }
