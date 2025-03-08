@@ -2,7 +2,6 @@ package com.computer.bikeSupervision.controller.webController;
 
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.computer.bikeSupervision.common.BaseContext;
 import com.computer.bikeSupervision.common.CustomException;
 import com.computer.bikeSupervision.common.Result;
@@ -117,19 +116,8 @@ public class StudentsController {
         // 根据当前线程获取 id
         String currentId = BaseContext.getCurrentId();
 
-        String key = "student:" + currentId;
-        // 从Redis中取出学生对象
-        String value = (String) redisTemplate.opsForValue().get(key);
 
-        // 将JSON字符串反序列化为学生对象
-        Students student = JSONObject.parseObject(value, Students.class);
-
-        log.info("当前登录的学生信息:{}", student);
-
-        if (student == null) {
-            // 如果 Redis 中不存在，再从数据库中查询
-            student = studentsService.getById(currentId);
-        }
+        Students student = studentsService.getById(currentId);
 
         return Result.ok(student);
     }
