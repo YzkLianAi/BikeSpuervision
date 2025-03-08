@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.TimeUnit;
+
 @Slf4j
 @RestController
 @Api(tags = "通行证审核管理")
@@ -130,12 +132,27 @@ public class PassReviewController {
     public Result<PageBean> getPassPlate(@RequestParam(defaultValue = "1") Integer pageNum,
                                          @RequestParam(defaultValue = "10") Integer pageSize) {
 
+        // 生成缓存的 key，包含方法名、页码和每页数量
+        String cacheKey = "getPassPlate:" + pageNum + ":" + pageSize;
+        // 尝试从 Redis 中获取缓存数据
+        String value = (String) redisTemplate.opsForValue().get(cacheKey);
+
+        PageBean cachedPageBean = JSONObject.parseObject(value, PageBean.class);
+
+        if (cachedPageBean != null) {
+            return Result.success(cachedPageBean);
+        }
+
         log.info("分页信息：pageNum: {}, pageSize: {}", pageNum, pageSize);
 
         //获取当前线程操作人 id
         String currentId = BaseContext.getCurrentId();
 
         PageBean pageBean = passReviewService.searchPlate(pageNum, pageSize, currentId);
+
+        // 将查询结果存入 Redis 缓存，设置过期时间（例如 10 分钟）
+        String json = JSONObject.toJSONString(pageBean);
+        redisTemplate.opsForValue().set(cacheKey, json, 10, TimeUnit.MINUTES);
 
         return Result.success(pageBean);
     }
