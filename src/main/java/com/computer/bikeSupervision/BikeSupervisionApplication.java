@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 //启动类
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ServletComponentScan
 //开启事务注解的支持
 @EnableTransactionManagement
+//开启缓存注解的支持
+@EnableCaching
 public class BikeSupervisionApplication {
 
     public static void main(String[] args) {
