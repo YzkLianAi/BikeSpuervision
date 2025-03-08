@@ -1,6 +1,7 @@
 package com.computer.bikeSupervision.controller.webController;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.computer.bikeSupervision.anno.Log;
 import com.computer.bikeSupervision.common.BaseContext;
@@ -18,9 +19,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -34,6 +38,9 @@ public class ViolationController {
 
     @Autowired
     private AdministratorService administratorService;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Log
     @ApiOperation(value = "违法信息新增")
@@ -50,6 +57,12 @@ public class ViolationController {
         violation.setDeductionScore(BigDecimal.valueOf((Math.random() * 5 + 5) * -1));
 
         violationService.save(violation);
+        // 清除违法信息分页查询的缓存
+        Set<String> keys = redisTemplate.keys("getViolations:*");
+        if (keys != null) {
+            redisTemplate.delete(keys);
+        }
+
         return Result.success("新增成功");
     }
 
@@ -59,17 +72,31 @@ public class ViolationController {
                                           @RequestParam(defaultValue = "10") Integer pageSize,
                                           String cause, String licencePlate) {
 
-        log.info("分页信息：pageNum: {}, pageSize: {}, railway: {}, licencePlate: {}", pageNum, pageSize, cause, licencePlate);
+        // 优化缓存键的生成逻辑
+        String cacheKey = String.format("getViolations:%d:%d:%s:%s", pageNum, pageSize, cause, licencePlate);
+        // 尝试从 Redis 中获取缓存数据
+        String value = (String) redisTemplate.opsForValue().get(cacheKey);
+
+        PageBean cachedPageBean = JSONObject.parseObject(value, PageBean.class);
+
+        if (cachedPageBean != null) {
+            return Result.success(cachedPageBean);
+        }
+
+        log.info("分页信息：pageNum: {}, pageSize: {}, cause: {}, licencePlate: {}", pageNum, pageSize, cause, licencePlate);
 
         //获取当前线程操作人 id
         String currentId = BaseContext.getCurrentId();
 
         PageBean pageBean = violationService.searchPage(pageNum, pageSize, cause, licencePlate, currentId);
 
+        // 将查询结果存入 Redis 缓存，设置过期时间（例如 10 分钟）
+        String json = JSONObject.toJSONString(pageBean);
+        redisTemplate.opsForValue().set(cacheKey, json, 10, TimeUnit.MINUTES);
+
         return Result.success(pageBean);
     }
 
-    @Log
     @ApiOperation(value = "违法信息审核")
     @PostMapping("/violationAudit")
     public Result<String> violationAudit(@RequestBody ViolationPageVo violationPageVo) {
@@ -95,12 +122,15 @@ public class ViolationController {
                 violationService.updateViolation(violation);
             }
             violationService.updateById(violation);
-
+            // 清除违法信息分页查询的缓存
+            Set<String> keys = redisTemplate.keys("getViolations:*");
+            if (keys != null) {
+                redisTemplate.delete(keys);
+            }
             return Result.success("审核成功");
         } else {
             return Result.error("权限不足");
         }
-
     }
 
     @ApiOperation(value = "违法信息处理进度查看")
@@ -108,7 +138,6 @@ public class ViolationController {
     public Result<PageBean> violationProgress(@RequestParam(defaultValue = "1") int pageNum,
                                               @RequestParam(defaultValue = "10") int pageSize,
                                               String cause, String licencePlate) {
-
         //获取当前线程操作人 id
         String currentId = BaseContext.getCurrentId();
         log.info("分页信息：pageNum: {}, pageSize: {}, railway: {}, licencePlate: {}", pageNum, pageSize, cause, licencePlate);

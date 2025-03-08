@@ -124,7 +124,7 @@ public class PassReviewServiceImpl extends ServiceImpl<PassReviewMapper, PassRev
         platePassLambdaQueryWrapper.eq(PlatePass::getSchoolName, schoolName);
 
         // 正常使用的放在上面
-        platePassLambdaQueryWrapper.orderByDesc(PlatePass::getFlag)
+        platePassLambdaQueryWrapper.orderByAsc(PlatePass::getFlag)
                 .orderByDesc(PlatePass::getUpdateTime);
 
         // 执行分页查询

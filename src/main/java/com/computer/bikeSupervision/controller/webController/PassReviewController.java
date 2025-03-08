@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -61,7 +62,6 @@ public class PassReviewController {
 
         log.info("当前登录的学生信息:{}", students);
 
-
         if (students == null) {
             //redis中不存在 去数据库中查
             students = studentsService.getById(currentId);
@@ -76,6 +76,12 @@ public class PassReviewController {
 
         passReviewService.save(passReview);
 
+        // 清除相关的缓存数据
+        Set<String> keys = redisTemplate.keys("getPassReview:*");
+        if (keys != null) {
+            redisTemplate.delete(keys);
+        }
+
         return Result.ok("新增成功");
     }
 
@@ -86,12 +92,27 @@ public class PassReviewController {
                                           @RequestParam(defaultValue = "10") Integer pageSize,
                                           String college, String licencePlate) {
 
+        // 生成缓存的 key，包含方法名、页码、每页数量、学院和车牌号
+        String cacheKey = "getPassReview:" + pageNum + ":" + pageSize + ":" + college + ":" + licencePlate;
+        // 尝试从 Redis 中获取缓存数据
+        String value = (String) redisTemplate.opsForValue().get(cacheKey);
+
+        PageBean cachedPageBean = JSONObject.parseObject(value, PageBean.class);
+
+        if (cachedPageBean != null) {
+            return Result.success(cachedPageBean);
+        }
+
         log.info("分页信息：pageNum: {}, pageSize: {}, college: {}, licencePlate: {}", pageNum, pageSize, college, licencePlate);
 
         //获取当前线程操作人 id
         String currentId = BaseContext.getCurrentId();
 
         PageBean pageBean = passReviewService.searchPage(pageNum, pageSize, college, licencePlate, currentId);
+
+        // 将查询结果存入 Redis 缓存，设置过期时间（例如 10 分钟）
+        String json = JSONObject.toJSONString(pageBean);
+        redisTemplate.opsForValue().set(cacheKey, json, 10, TimeUnit.MINUTES);
 
         return Result.success(pageBean);
     }
@@ -117,7 +138,11 @@ public class PassReviewController {
                 // 审核通过
                 passReviewService.passReviewAudit(passReview);
             }
-
+            // 清除相关的缓存数据
+            Set<String> keys = redisTemplate.keys("getPassReview:*");
+            if (keys != null) {
+                redisTemplate.delete(keys);
+            }
             //修改状态
             passReviewService.updateById(passReview);
             return Result.success("审核成功");
@@ -176,6 +201,12 @@ public class PassReviewController {
             PlatePass platePass = new PlatePass();
             BeanUtils.copyProperties(platePassPageVo, platePass);
             platePassService.updateById(platePass);
+
+            // 清除相关的缓存数据
+            Set<String> keys = redisTemplate.keys("getPassPlate:*");
+            if (keys != null) {
+                redisTemplate.delete(keys);
+            }
             return Result.success("报废成功");
 
         } else {
