@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,16 +24,16 @@ public class AdministratorServiceImpl extends ServiceImpl<AdministratorMapper, A
         implements AdministratorService {
 
     /**
-     *登录
+     * 登录
      */
     @Override
-    public String login(AdministratorLoginDto administratorLoginDto) {
+    public String login(AdministratorLoginDto administratorLoginDto, HttpServletRequest request) {
         // 创建条件构造器
         LambdaQueryWrapper<Administrator> queryWrapper = new LambdaQueryWrapper<>();
         // 比对 账号 密码 和 学校 是否对应
         queryWrapper.eq(Administrator::getAdminNumber, administratorLoginDto.getAdminNumber())
                 .eq(Administrator::getPassword, administratorLoginDto.getPassword());
-                //.eq(Administrator::getSchoolName, administratorLoginDto.getSchoolName());
+        //.eq(Administrator::getSchoolName, administratorLoginDto.getSchoolName());
 
         Administrator administrator = this.getOne(queryWrapper);
         if (administrator != null) {
@@ -41,8 +42,9 @@ public class AdministratorServiceImpl extends ServiceImpl<AdministratorMapper, A
             claims.put("id", administrator.getId());
             claims.put("name", administrator.getAdminName());
             claims.put("number", administrator.getAdminNumber());
-
-            String jwt = JwtUtils.generateJwt(claims);
+            // 获取用户登录时的 IP 地址
+            String ip = request.getRemoteAddr();
+            String jwt = JwtUtils.generateJwt(claims, ip);
             String token = "Bearea" + " " + jwt;
             log.info(token);
             //将生成的令牌返回 后续前端的每次请求都必须携带这个令牌

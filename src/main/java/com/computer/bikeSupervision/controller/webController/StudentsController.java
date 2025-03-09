@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Slf4j
@@ -49,14 +50,10 @@ public class StudentsController {
 
     @ApiOperation(value = "学生登录接口", notes = "需要转递邮箱和密码password")
     @PostMapping("/login")
-    public Result<String> login(@ApiParam("学生登录Dto") @RequestBody StudentLoginDto studentLoginDto) {
-        //获取当前学生的邮箱
-        //String email = studentLoginDto.getEmail();
-        //获取经过md5加密后的密码
-        //String md5Password = DigestUtils.md5DigestAsHex(studentLoginDto.getPassword().getBytes());
-        //studentLoginDto.setPassword(md5Password);
+    public Result<String> login(@ApiParam("学生登录Dto") @RequestBody StudentLoginDto studentLoginDto, HttpServletRequest request) {
+        log.info("当前登录学生：{}", studentLoginDto);
 
-        String token = studentsService.login(studentLoginDto);
+        String token = studentsService.login(studentLoginDto, request);
 
         return Result.ok(token);
 

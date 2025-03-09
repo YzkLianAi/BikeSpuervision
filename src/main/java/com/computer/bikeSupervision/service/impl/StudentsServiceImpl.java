@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,10 +51,8 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
      * 学生登录
      */
     @Override
-    public String login(StudentLoginDto studentLoginDto) {
-        log.info("当前登录学生：{}", studentLoginDto);
-
-        //先比对邮箱是否错误
+    public String login(StudentLoginDto studentLoginDto, HttpServletRequest request) {
+        // 先比对邮箱是否错误
         LambdaQueryWrapper<Students> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Students::getEmail, studentLoginDto.getEmail());
 
@@ -62,7 +61,7 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
             throw new CustomException("邮箱错误,请重新输入");
         }
 
-        //比对原始密码 和 加密密码
+        // 比对原始密码 和 加密密码
         // 验证密码 前者为传递的原密码 后者为 数据库中存放的加密密码
         boolean isMatch = CustomSaltPasswordEncoder.matches(studentLoginDto.getPassword(), student.getPassword());
 
@@ -73,13 +72,16 @@ public class StudentsServiceImpl extends ServiceImpl<StudentsMapper, Students> i
             claims.put("name", student.getStudentName());
             claims.put("number", student.getStudentNumber());
 
-            String jwt = JwtUtils.generateJwt(claims);
+            // 获取用户登录时的 IP 地址
+            String ip = request.getRemoteAddr();
+            // 生成 JWT 令牌，传递 IP 地址
+            String jwt = JwtUtils.generateJwt(claims, ip);
             String token = "Bearea" + " " + jwt;
-            log.info(token);
-            //将生成的令牌返回 后续前端的每次请求都必须携带这个令牌
+            //log.info(token);
+            // 将生成的令牌返回 后续前端的每次请求都必须携带这个令牌
 
             // 将学生信息缓存到 Redis 中，设置过期时间为 1 小时
-            // 将学生对象存入Redis
+            // 将学生对象存入 Redis
             String key = "student:" + student.getId();
             String json = JSONObject.toJSONString(student);
             redisTemplate.opsForValue().set(key, json, 12, TimeUnit.HOURS);

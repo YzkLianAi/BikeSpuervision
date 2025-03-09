@@ -5,6 +5,7 @@ import com.computer.bikeSupervision.pojo.dto.StudentLoginDto;
 import com.computer.bikeSupervision.pojo.entity.PageBean;
 import com.computer.bikeSupervision.pojo.entity.Students;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 
 
@@ -21,7 +22,7 @@ public interface StudentsService extends IService<Students> {
     /**
      * 登录
      */
-    String login(StudentLoginDto studentLoginDto);
+    String login(StudentLoginDto studentLoginDto, HttpServletRequest request);
 
     /**
      * 分页查询学生信息

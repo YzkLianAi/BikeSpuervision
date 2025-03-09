@@ -4,6 +4,8 @@ import com.computer.bikeSupervision.pojo.dto.AdministratorLoginDto;
 import com.computer.bikeSupervision.pojo.entity.Administrator;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 public interface AdministratorService extends IService<Administrator> {
 
@@ -12,7 +14,7 @@ public interface AdministratorService extends IService<Administrator> {
      * @param administratorLoginDto
      * @return
      */
-    String login(AdministratorLoginDto administratorLoginDto);
+    String login(AdministratorLoginDto administratorLoginDto, HttpServletRequest request);
 
     /**
      * 管理员注册

@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Slf4j
 @RestController
 @Api(tags = "管理员信息管理")
@@ -28,7 +30,8 @@ public class AdministratorController {
 
     @ApiOperation(value = "管理员登录接口")
     @PostMapping("/login")
-    public Result<String> login(@ApiParam("管理员登录Dto") @RequestBody AdministratorLoginDto administratorLoginDto) {
+    public Result<String> login(@ApiParam("管理员登录Dto") @RequestBody AdministratorLoginDto administratorLoginDto
+            , HttpServletRequest request) {
         //获取当前管理员账号
         String adminNumber = administratorLoginDto.getAdminNumber();
         //获取经过md5加密后的密码
@@ -38,7 +41,7 @@ public class AdministratorController {
 
         log.info("登录的管理员账号:{},密码:{},学校:{}", adminNumber, md5Password, administratorLoginDto.getSchoolName());
 
-        String token = administratorService.login(administratorLoginDto);
+        String token = administratorService.login(administratorLoginDto, request);
 
         return Result.setToken(token);
     }

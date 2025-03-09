@@ -14,11 +14,13 @@ public class JwtUtils {
 
     /**
      * 生成JWT令牌
+     *
      * @param claims JWT第二部分负载 payload 中存储的内容
      * @return
      */
-    public static String generateJwt(Map<String, Object> claims){
+    public static String generateJwt(Map<String, Object> claims, String ip) {
         //System.out.println(jwt);
+        claims.put("ip", ip);
         return Jwts.builder()
                 .addClaims(claims)  //令牌内的个人信息内容
                 .signWith(SignatureAlgorithm.HS256, signKey) //令牌的加密解密方式
@@ -28,10 +30,11 @@ public class JwtUtils {
 
     /**
      * 解析JWT令牌
+     *
      * @param jwt JWT令牌
      * @return JWT第二部分负载 payload 中存储的内容
      */
-    public static Claims parseJWT(String jwt){
+    public static Claims parseJWT(String jwt) {
         return Jwts.parser()
                 .setSigningKey(signKey)
                 .parseClaimsJws(jwt)
